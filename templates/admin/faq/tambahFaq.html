@@ -1,0 +1,14 @@
+{% include 'include.html' %}
+
+{% include 'admin/components/navbar.html' %}
+
+<h1>Tambah FaQ</h1>
+<form action="/adminFaq/new" method="POST" enctype="multipart/form-data">
+    <label for="pertanyaan">Pertanyaan</label>
+    <input type="text" name="pertanyaan" id="pertanyaan" required>
+    <br><br>
+    <label for="jawaban">Jawaban</label>
+    <textarea name="jawaban" id="jawaban" ></textarea>
+    <br><br>
+    <input type="submit" value="Tambah Data">
+</form>

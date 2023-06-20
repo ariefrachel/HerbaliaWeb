@@ -1,0 +1,50 @@
+{% include 'include.html' %}
+<header id="header" class="header fixed-top d-flex align-items-center">
+  {% include 'components/navbar.html' %}
+</header>
+
+
+<section id="herb-list" class="herb-list daftarArtikel" style="background-color: #F5F6F8;">
+  <div class="container" data-aos="fade-up" style="margin-top:72px">
+    <div class="section-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <h1 data-aos="fade-up">Artikel dan Tips Untukmu</h1>
+        <form action="/daftarArtikel/search" method="GET" class="d-flex">
+          <input class="form-control me-2" type="text" name="query" placeholder="Cari artikel...">
+          <button type="submit" class="btn btn-primary">Cari</button>
+      </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+        <div class="row">
+          <div class="col-lg-6" data-aos="fade-up">
+            <div class="row">
+              {% for artikel in artikel %}
+              <div class="col-12">
+                <div class="landingarticles">
+                  <div class="row">
+                    <div class="col-lg-8">
+                      <h5 data-aos="fade-up">{{artikel.judul}}</h5>
+                      <p class="description" style="margin-top: 21px;"><a href="/daftarArtikel/{{ artikel._id }}" class="btn-primary">Baca Artikel</a></p>
+                    </div>
+                    <div class="col-lg-4">
+                      <div class="thumb">
+                        <img class="thumbimg" src="../../static/img/artikel/{{artikel.path}}" alt="" style="width: 150%;">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {%endfor%}
+            </div>
+          </div>
+        </div>
+  </div>
+
+
+  <footer id="footer" class="footer" style="margin-top:120px;">
+    {% include 'components/footer.html' %}
+  </footer>

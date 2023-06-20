@@ -1,0 +1,20 @@
+<div class="row">
+    <h3 data-aos="fade-up" class="mb-3">Tanaman Herbal lainnya</h3>
+    {% for artikel in daftarArtikel %}
+    <div class="col-12">
+      <div class="landingarticles">
+        <div class="row">
+          <div class="col-lg-8">
+            <h5 data-aos="fade-up">{{artikel.judul}}</h5>
+            <p class="description" style="margin-top: 21px;"><a href="/daftarArtikel/{{ artikel._id }}" class="btn-primary">Baca Artikel</a></p>
+          </div>
+          <div class="col-lg-4">
+            <div class="thumb">
+              <img class="thumbimg" src="../../static/img/artikel/{{artikel.path}}" alt="" style="width: 150%;">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {%endfor%}
+</div>

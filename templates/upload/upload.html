@@ -1,0 +1,99 @@
+
+<div class="container">
+  <div class="">
+      <div class="main row" style="padding-top:120px">
+          <div class="col-lg-4">
+              <div class="row">
+                  <div class="panel col-lg-12">
+                      <label for="file-upload" class="upload-box uploadScan" onclick="openCameraModal()" data-aos="flip-left">
+                          <div id="upload-caption" class="d-flex justify-content-center align-items-center">
+                            <div class=" text-center">
+                                <i class="fa fa-camera-retro fa-xl" style="font-size:32px;color:#879452"></i>
+                                <h5 class="mt-2">Scan tanaman kamu disini</h5>
+                            </div>
+                        </div>
+                      </label>
+                  </div>
+                  <div class="panel col-lg-12">
+                      <h5 class="text-center" style="padding:8px;background-color: #fff; ">Atau</h5>
+                  </div>
+                  <div class="panel col-lg-12">
+                      <label for="imageUpload" class="upload-box uploadScan" data-aos="flip-left">
+                          <div id="uploadContainer">
+                              <input type="file" class="form-control" id="imageUpload" accept="image/*" style="display: none;">
+                              <div id="upload-caption" class="d-flex justify-content-center align-items-center">
+                                <div class=" text-center">
+                                    <i class="fa fa-upload fa-xl" style="font-size:32px;color:#879452"></i>
+                                    <div id="dragDropArea">
+                                      <h5 class="mt-2">Taruh gambar tanamanmu disini</h5>
+                                    </div>
+                                </div>
+                              </div>
+                          </div>
+                      </label>
+                  </div>
+              </div>
+
+
+              <div id="cameraModal" class="modal">
+                  <div class="modal-dialog modal-fullscreen">
+                      <div class="modal-content">
+                          <div class="modal-body">
+                              <center>
+                                  <video id="video" width="60%" height="auto" style="border-radius: 48px;"></video>
+                              </center>
+                          </div>
+                          <div class="modal-footer">
+                              <button class="btn btn-primary" onclick="captureImage()">Ambil Foto</button>
+                              <button class="btn btn-primary" style="background-color:rgb(182, 110, 110);border:none" onclick="closeCameraModal()">Tutup</button>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <div class="col-lg-8">
+              <div class="result"  id="result" data-aos="zoom-in-up">
+                  <div class="resultbox">
+
+                      <div class="d-flex align-items-center">
+                          <img id="capturedImage" src="" alt="Gambar Hasil Kamera" style="display: none;">
+                          <div class="resultHeading" style="padding-left: 1rem;">
+                              <p id="akurasiLabel" class="resultLabel">Akurasi</p>
+                              <p id="accuracy" style="font-size:32px"></p>
+                              <p class="mt-3 resultLabel" id="namaTanamanLabel">Nama Tanaman</p>
+                              <p id="namaTanaman"  style="font-size:21px"></p>
+                              <span class="fst-italic mb-2" id="namaIlmiah"></span>
+                          </div>
+                      </div>
+
+                      <div id="tampil" class="mt-2">
+                          <div class="d-flex justify-content-center">
+                              <img src="../../static/img/feature/feature4.png" alt="" style="width: 40%">
+                          </div>
+                          <h5 class="text-center mt-4">Hasil akan ditampilkan disini</h5>
+                      </div>
+
+                      <div class="mt-4">
+                          <p id="deskripsi"></p>
+                          <p id="khasiatLabel" class="mt-3 resultLabel">Khasiat</p>
+                          <ul id="khasiat"></ul>
+                      </div>
+
+                  </div>
+              </div>
+          </div>
+
+          {% include 'upload/saran.html' %}
+
+      </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.6.1/dist/sweetalert2.min.js"></script>
+<script src="../../static/js/scan.js"></script>
+<script>
+
+</script>

@@ -1,0 +1,581 @@
+
+
+
+
+
+
+
+import numpy as np
+import keras
+import pickle
+import datetime 
+from datetime import date
+from flask import Flask, jsonify,request,flash,redirect,render_template, session,url_for,flash
+from itsdangerous import json
+from werkzeug.utils import secure_filename
+import os
+from flask_cors import CORS
+from html.parser import HTMLParser
+from flask_restful import Resource, Api
+# import pymongo
+from flaskext.mysql import MySQL
+
+app = Flask(__name__)
+
+mysql = MySQL()
+
+UPLOAD_FOLDER = 'static/tempimg'
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+app.secret_key = "tuing"
+
+# MONGO_ADDR = 'mongodb://localhost:27017'
+# MONGO_DB = "herbalia"
+
+# conn = pymongo.MongoClient(MONGO_ADDR)
+# db = conn[MONGO_DB]
+
+api = Api(app)
+
+app.config['MYSQL_DATABASE_USER'] = 'root'
+app.config['MYSQL_DATABASE_PASSWORD'] = ''
+app.config['MYSQL_DATABASE_DB'] = 'herbalia'
+app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+
+#Initialize the MySQL extension
+mysql.init_app(app)
+
+conn = mysql.connect()
+cursor = conn.cursor()
+
+CORS(app)
+
+from tensorflow.keras.models import load_model
+MODEL_PATH = 'model/model.h5'
+model = load_model(MODEL_PATH,compile=False)
+
+pickle_inn = open('num_class_herbal.pkl','rb')
+num_classes_herb = pickle.load(pickle_inn)
+
+def allowed_file(filename):     
+  return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+class index(Resource):
+  def post(self):
+
+    if 'image' not in request.files:
+      flash('No file part')
+      return jsonify({
+            "pesan":"tidak ada form image"
+          })
+    file = request.files['image']
+    if file.filename == '':
+      return jsonify({
+            "pesan":"tidak ada file image yang dipilih"
+          })
+    if file and allowed_file(file.filename):
+      path_del = r"static/tempimg\\"
+      for file_name in os.listdir(path_del):
+        # construct full file path
+        file_del = path_del + file_name
+        if os.path.isfile(file_del):
+            print('Deleting file:', file_del)
+            os.remove(file_del)
+            print("file "+file_del+" telah terhapus")
+      filename = secure_filename(file.filename)
+      file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+      path=("static/tempimg/"+filename)
+      today = date.today()
+      sqlQuery = "INSERT INTO riwayat (nama_file, path, prediksi, akurasi, tanggal) VALUES(%s, %s, %s, %s, %s)"
+      cursor.execute(sqlQuery, (filename, path, 'No predict', 0, today.strftime("%d/%m/%Y")))
+      conn.commit()
+      # db.riwayat.insert_one({'nama_file': filename, 'path': path, 'prediksi':'No predict', 'akurasi':0, 'tanggal':today.strftime("%d/%m/%Y")})
+
+      img=keras.utils.load_img(path,target_size=(224,224))
+      img1=keras.utils.img_to_array(img)
+      img1=img1/255
+      img1=np.expand_dims(img1,[0])
+
+      predict=model.predict(img1)
+      classes=np.argmax(predict,axis=1)
+      for key,values in num_classes_herb.items():
+          if classes==values:
+            accuracy = float(round(np.max(model.predict(img1))*100,2))
+            cursor.execute('SELECT * FROM namatanaman WHERE nama = %s',str(key))
+            # nama = """SELECT * FROM namatanaman WHERE nama=%s"""
+            # cursor.execute(str(key))
+            info = cursor.fetchall()
+            # info = db['tanamanHerbal'].find_one({'nama': str(key)})
+            updateRiwayat = """UPDATE riwayat SET nama_file=%s, prediksi=%s, akurasi=%s WHERE nama_file=%s"""
+            cursor.execute(updateRiwayat, (filename, str(key), accuracy, filename))
+            conn.commit()
+            # db.riwayat.update_one({'nama_file': filename}, 
+            #   {"$set": {
+            #     'prediksi': str(key), 
+            #     'akurasi':accuracy
+            #   }
+            #   })
+            if accuracy >75:
+              print("Hasil prediksi tanaman herbal: "+str(key)+" dengan probabilitas "+str(accuracy)+"%")
+        
+              return jsonify({
+                "nama":str(key),
+                "Accuracy":str(accuracy)+"%",
+                "deskripsi": info
+              })
+            else :
+              print("Hasil prediksi tanaman herbal: "+str(key)+" dengan probabilitas "+str(accuracy)+"%")
+              return jsonify({
+                "Message":str("Ini bukan tanaman herbal"),
+                "Accuracy":str(accuracy)+"%"               
+                
+              })
+      
+      else:
+       return jsonify({
+        "Message":"bukan file image"
+      })
+
+
+api.add_resource(index, "/api/image", methods=["POST"])
+
+
+
+
+if __name__ == '__main__':
+  app.run(debug = True, port=5000, host='0.0.0.0')
+
+
+
+
+
+
+
+
+
+
+
+from flask import Flask, render_template, jsonify, request
+from tensorflow.keras.models import load_model
+import numpy as np
+from tensorflow.keras.preprocessing.image import load_img
+from tensorflow.keras.applications.resnet50 import preprocess_input
+import os
+from tensorflow.keras.preprocessing import image
+import pickle
+from html.parser import HTMLParser
+# from flaskext.mysql import MySQL
+# from flask_restful import Resource, Api
+# import pymysql
+
+app = Flask(__name__)
+
+# connection = pymysql.connect(host="localhost", user="root", password="", database="herbalia")
+# cursor = connection.cursor()
+
+# mysql = MySQL()
+# api = Api(app)
+
+# app.config['MYSQL_DATABASE_USER'] = 'root'
+# app.config['MYSQL_DATABASE_PASSWORD'] = ''
+# app.config['MYSQL_DATABASE_DB'] = 'herbalia'
+# app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+
+# mysql.init_app(app)
+
+model = load_model('model/model.h5')
+target_img = os.path.join(os.getcwd() , 'static/images')
+
+@app.route('/')
+def index_view():
+    return render_template('index.html')
+
+@app.route('/upload')
+def upload_image():
+    return render_template('upload.html')
+
+ALLOWED_EXT = set(['jpg' , 'jpeg' , 'png'])
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXT
+           
+
+def read_image(filename):
+
+    img=image.load_img(filename,target_size=(224,224))
+    x=image.img_to_array(img)
+    x=x/255
+    x=np.expand_dims(x,[0])
+
+    return x
+
+numClass = open('num_class_herbal.pkl','rb')
+classHerbal= pickle.load(numClass)
+
+parser = HTMLParser()
+@app.route('/predict',methods=['GET','POST'])
+def predict():
+  if request.method == 'POST':
+    file = request.files['file']
+    if file and allowed_file(file.filename):
+      filename = file.filename
+      file_path = os.path.join('static/images', filename)
+      file.save(file_path)
+      img = read_image(file_path)
+      predict=model.predict(img)
+      classes=np.argmax(predict,axis=1)
+      if classes == 0:
+        namaTanaman = "Daun Jambu Biji"
+        jenis = "Perennial"
+        probabilitas = str(round(np.max(model.predict(img))*100,2))+" %"
+        namaIlmiah = "(Psidii guajavae folium)"
+        deskripsi = "Daun Jambu Biji mengandung banyak nutrisi yang tak kalah menyehatkan. Manfaat daun jambu biji berasal dari kandungan antioksidan seperti vitamin C, serta kalium, dan serat. Dikutip dari WebMD, daun tanaman ini kerap digunakan sebagai obat diare di beberapa negara, seperti India dan China. Khasiat daun jambu biji bisa dirasakan dengan mengonsumsi dalam bentuk air rebusan. Caranya, cuci bersih beberapa lembar daun jambu biji, dan rebus hingga air berwarna kecoklatan. Kemudian, saring untuk memisahkan air rebusan dengan daun jambu biji. Air rebusan daun jambu biji pun siap dikonsumsi."
+        manfaat1 = "Menurunkan kadar gula darah"
+        manfaat2 = "Lancarkan Pencernaan"
+        manfaat3 = "Obati Luka dan Infeksi"
+        manfaat4 = "Obati Diare dan Disentri"
+      if classes == 1:
+        namaTanaman = "Daun Kari"
+        jenis = "Perennial"
+        probabilitas = str(round(np.max(model.predict(img))*100,2))+" %"
+        namaIlmiah = "(Murraya koenigii)"
+        deskripsi = "Daun kari merupakan bagian dari pohon kari yang berasal dari India. Tanaman ini memiliki aroma khas mirip jeruk dan juga rasa yang unik. Tanaman ini memiliki banyak manfaat untuk kesehatan karena mengandung zat pelindung tanaman, seperti alkaloid, glikosida dan senyawa fenolik. Penelitian menunjukkan bahwa daun kari mengandung banyak senyawa, antara lain linalool, alpha-terpinene, myrcene, mahanimbine, caryophyllene, murrayanol, dan alpha-pinene."
+        manfaat1 = "Menjaga Kesehatan Saraf"
+        manfaat2 = "Dapat Menurunkan Risiko Penyakit Jantung"
+        manfaat3 = "Mencegah Penyakit Alzheimer"
+        manfaat4 = "Mengontrol Kadar Gula Darah"
+      if classes == 2:
+        namaTanaman = "Daun Kemangi"
+        jenis = "Annual"
+        probabilitas = str(round(np.max(model.predict(img))*100,2))+" %"
+        namaIlmiah = "(Ocimum basilicum)"
+        deskripsi = "Daun kemangi atau Ocimum basilicum berperan dalam banyak masakan Mediterania, khususnya Italia. Selain itu, masakan Indonesia, Thailand, dan Vietnam juga menyajikan daun kemangi sebagai campuran masakan. Tak hanya menjadi penambah rasa yang khas, ternyata ada banyak manfaat daun kemangi untuk kesehatan. Salah satunya untuk ibu hamil dan janinnya."
+        manfaat1 = "Mengurangi Stres Oksidatif"
+        manfaat2 = "Menjaga Kesehatan Hati"
+        manfaat3 = "Menurunkan Gula Darah Tinggi"
+        manfaat4 = "Mengurangi Peradangan dan Pembengkakan"
+      if classes == 3:
+        namaTanaman = "Daun Kunyit"
+        jenis = "Perennial"
+        probabilitas = str(round(np.max(model.predict(img))*100,2))+" %"
+        namaIlmiah = "(Curcuma)"
+        deskripsi = "Kunyit, yang memiliki nama biologis Curcuma longa, telah lama digunakan di India sebagai bagian dari pengobatan Ayurveda, juga dalam pengobatan Tiongkok selama ribuan tahun, untuk mengobati berbagai kondisi kesehatan. Daun kunyit dibudidayakan dan digunakan secara luas di Asia Selatan. Khasiat daun ini terkenal dengan zat antiseptik dan antikarsinogeniknya. Daun ini memiliki aroma netral saat masih segar, lalu setelah dipotong, ditumbuk, atau dikunyah, akan melepaskan rasa asam yang khas dengan aroma rumput dan mint. Saat dimasak, daun ini memberikan rasa bunga, pedas, dan jahe dengan sedikit rasa pahit."
+        manfaat1 = "Membantu Melancarkan Pencernaan"
+        manfaat2 = "Sebagai Obat Antiinflamasi"
+        manfaat3 = "Sebagai Antiseptik"
+        manfaat4 = "Pengobatan Sindrom Iritasi Usus Besar"
+      if classes == 4:
+        namaTanaman = "Daun Mint"
+        jenis = "Perennial"
+        probabilitas = str(round(np.max(model.predict(img))*100,2))+" %"
+        namaIlmiah = "(Mentha)"
+        deskripsi = "Mint atau peppermint adalah salah satu jenis tanaman yang memberikan sensasi segar dan menyejukkan di mulut. Biasanya, daun mint ditambahkan ke dalam makanan atau minuman dalam bentuk segar atau kering. Daun mint atau seringkali disebut pudina ini memiliki banyak kandungan bermanfaat seperti vitamin A, zat besi, menthol, antibakteri, folat, mangan, dan serat. Tak hanya itu saja. Manfaat daun mint pun dapat membantu untuk mencerahkan kulit wajah"
+        manfaat1 = "Mengatasi Rasa Gatal pada Kulit"
+        manfaat2 = "Mengurangi Produksi Minyak Berlebihan pada Kulit"
+        manfaat3 = "Memperkuat dan Menumbuhkan Rambut"
+        manfaat4 = "Membantu Meredakan Sakit Kepala dan Stres"
+      if classes == 5:
+        namaTanaman = "Daun Pepaya"
+        jenis = "Perennial"
+        probabilitas = str(round(np.max(model.predict(img))*100,2))+" %"
+        namaIlmiah = "(Carica papaya)"
+        deskripsi = "Tumbuhan ini berasa varietas carica papaya, sejenis pohon tropis berbuah yang tumbuh subur di Indonesia. Bahkan, saat ini, pepaya adalah salah satu tanaman yang paling banyak dibudidayakan di dunia. Seluruh manfaat dari daun pepaya berasal dari kandungan gizi penting yang terdapat di dalamnya. Tidak hanya mineral, daun buah ini juga mengandung sejumlah vitamin penting."
+        manfaat1 = "Mengatasi Jerawat dan Bintik Hitam"
+        manfaat2 = "Merangsang Pertumbuhan Rambut"
+        manfaat3 = "Mencegah Sel Kanker"
+        manfaat4 = "Menjaga Fungsi Liver"
+      if classes == 6:
+        namaTanaman = "Daun Sirih"
+        jenis = "Perennial"
+        probabilitas = str(round(np.max(model.predict(img))*100,2))+" %"
+        namaIlmiah = "(Piper betle)"
+        deskripsi = "Daun sirih juga disebut sebagai 'Emas Hijau'. Daun ini adalah aset kuno dalam pengobatan India Ayurveda, dan penggunaannya di India sudah ada sejak 400 SM. Daun sirih termasuk dalam famili Piperaceae (keluarga lada hitam). Ada sekitar 100 varietas sirih di dunia, 40 di antaranya ditemukan di India. Menurut pengobatan tradisional, daun ini dapat membantu dalam pengobatan sakit kepala, gatal-gatal, mastitis, luka sayat, lecet, sembelit, dan luka. Ini karena di dalam daun ini terdapat senyawa yang memiliki sifat antibakteri, antiprotozoal, dan antijamur."
+        manfaat1 = "Meningkatkan Kesehatan Gigi"
+        manfaat2 = "Mempercepat Penyembuhan Luka"
+        manfaat3 = "Dapat Mengurangi Batuk"
+        manfaat4 = "Memiliki Sifat Antiseptik dan Antijamur"
+      if classes == 7:
+        namaTanaman = "Daun Sirsak"
+        jenis = "Perennial"
+        probabilitas = str(round(np.max(model.predict(img))*100,2))+" %"
+        namaIlmiah = "(Annona muricata))"
+        deskripsi = "Selain daging buah yang lezat, daun sirsak juga dinilai memiliki beragam khasiat untuk kesehatan tubuh. Sirsak adalah buah yang populer karena rasanya yang enak, dengan manfaat kesehatan yang mengesankan. Bukan hanya itu saja, buah ini juga sangat padat nutrisi dan menawarkan berbagai serat maupun vitamin C yang baik."
+        manfaat1 = "Mengontrol Peradangan Tubuh"
+        manfaat2 = "Mengatasi Insomnia"
+        manfaat3 = "Menjaga Kesehatan Mulut"
+        manfaat4 = "Tinggi Antioksidan"
+      if classes == 8:
+        namaTanaman = "Lidah Buaya"
+        jenis = "Perennial"
+        probabilitas = str(round(np.max(model.predict(img))*100,2))+" %"
+        namaIlmiah = "(Aloe veras))"
+        deskripsi = "Tanaman herbal yang memiliki cairan berlendir ini memiliki beragam khasiat untuk kesehatan rambut. Khasiatnya dapat dirasakan bagi pemilik rambut kering, berminyak, ataupun mengembang dan sulit diatur. "
+        manfaat1 = "Mempercepat Proses Pemanjangan Rambut"
+        manfaat2 = "Tingkatkan Peredaran Darah"
+        manfaat3 = "Jaga Kesehatan Kulit Kepala"
+        manfaat4 = "Memperbaiki Sel Kulit Kepala yang Rusak"
+      if classes == 9:
+        namaTanaman = "Daun Teh Hijau"
+        jenis = "Perennial"
+        probabilitas = str(round(np.max(model.predict(img))*100,2))+" %"
+        namaIlmiah = "(Camellia sinensis))"
+        deskripsi = "Tanaman ini dikenal memiliki banyak manfaat teh hijau bagi kesehatan, di antaranya sebagai antioksidan, mencegah diabetes, juga mengurangi berat badan. Manfaat teh hijau terbesar itu ternyata ada dalam kandungan katekinnya. Katekin adalah antioksidan yang melawan dan bahkan dapat mencegah kerusakan sel. Karena teh hijau tidak banyak diproses sebelum dituangkan ke dalam cangkir, jadi teh hijau kaya akan katekin. "
+        manfaat1 = "Bisa Meningkatkan Pembakaran Lemak"
+        manfaat2 = "Dapat Melindungi Otak dari Penuaan"
+        manfaat3 = "Menurunkan Risiko Beberapa Jenis Kanker"
+        manfaat4 = "Membuat Tubuh Jadi Lebih Rileks"
+      return render_template('predict.html', user_image = file_path, namaTanaman=namaTanaman, jenis=jenis, probabilitas=probabilitas, namaIlmiah=namaIlmiah, deskripsi=deskripsi, manfaat1=manfaat1, manfaat2=manfaat2, manfaat3=manfaat3, manfaat4=manfaat4)
+
+
+if __name__ == '__main__':
+    app.run(debug=True,use_reloader=False, port=8000)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import json
+import pymongo
+from bson.objectid import ObjectId
+import os
+import pickle
+import random
+import string
+import sys
+import numpy as np
+from util import base64_to_pil
+from flask import Flask, redirect, url_for, request, render_template, Response, jsonify, session
+from werkzeug.utils import secure_filename
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras.applications.imagenet_utils import preprocess_input, decode_predictions
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing import image
+from tensorflow.keras.utils import get_file
+
+
+app = Flask(__name__)
+# run_with_ngrok(app)
+
+app.secret_key = 'MySecret'
+
+# ========== SETUP MONGODB ==========
+try:
+    mongo = pymongo.MongoClient(
+        host="localhost",
+        port=27017,
+        serverSelectionTimeoutMS=1000
+    )
+    db = mongo.herbalia
+    mongo.server_info()
+except:
+    print("ERROR Connect To Database")
+
+# =============================================================================
+
+
+# ========== PREDICT ==========================================================
+target_names = [
+    'aloevera', 'banana', 'coconut', 'corn', 'cucumber', 'ginger', 'soybeans'
+]
+
+model = load_model('model/model_plant.h5')
+
+pickle_inn = open('num_class_herbal.pkl','rb')
+num_classes_herb = pickle.load(pickle_inn)
+
+def model_predict(img, model):
+    img = img.resize((224, 224))
+    x = image.img_to_array(img)
+    x = x.reshape(-1, 224, 224, 3)
+    x = x.astype('float32')
+    x = x / 255.0
+    preds = model.predict(x)
+    return preds
+
+
+@app.route('/api/v1/image/predict', methods=['POST'])
+def predict():
+    try:
+        # Request gambar
+        img = base64_to_pil(request.json)
+
+        # Simpan Gambar
+        img.save("static/tempimg/plant.png")
+
+        # Membuat Prediksi
+        preds = model_predict(img, model)
+
+        hasil_label = target_names[np.argmax(preds)]
+        data = list(db.plants.find())
+
+        for i, plant in num_classes_herb.items():
+            if hasil_label == plant:
+                nama_tanaman = data[i]["nama"]
+                deskripsi_tanaman = data[i]["deskripsi"]
+                khasiat_tanaman = data[i]["khasiat"]
+
+        # 2f adalah presisi angka dibelakang koma (coba ganti jadi 0f, 3f, dst)
+        hasil_prob = "{:.2f}".format(100 * np.max(preds))
+
+        return jsonify(
+            result=hasil_label,
+            probability=hasil_prob + str('%'),
+            nama=nama_tanaman,
+            deskripsi=deskripsi_tanaman,
+            khasiat=khasiat_tanaman
+        )
+    except Exception as ex:
+        print(ex)
+        return Response(
+            response=json.dumps({"message": "Cannot Predict!"}),
+            status=500,
+            mimetype="application/json"
+        )
+
+
+@app.route('/', methods=['GET'])
+def index():
+    return render_template('index.html')
+
+if __name__ == "__main__":
+    # app.run()
+    app.run(port=8000, debug=True)
+
+
+
+  
+ if hasil_label == plant:
+                nama_tanaman = data[i]["nama"]
+                deskripsi_tanaman = data[i]["deskripsi"]
+                khasiat_tanaman = data[i]["khasiat"]
+
+        # 2f adalah presisi angka dibelakang koma (coba ganti jadi 0f, 3f, dst)
+        hasil_prob = "{:.2f}".format(100 * np.max(preds))
+
+        return jsonify(
+            result=hasil_label,
+            probability=hasil_prob + str('%'),
+            nama=nama_tanaman,
+            deskripsi=deskripsi_tanaman,
+            khasiat=khasiat_tanaman
+        )
+
+
+
+
+
+
+UPLOAD_FOLDER = 'static/tempimg'
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+app.secret_key = "tuing"
+
+MONGO_ADDR = 'mongodb://localhost:27017'
+MONGO_DB = "herbalia"
+
+conn = pymongo.MongoClient(MONGO_ADDR)
+db = conn[MONGO_DB]
+
+api = Api(app)
+CORS(app)
+
+from tensorflow.keras.models import load_model
+MODEL_PATH = 'model/model.h5'
+model = load_model(MODEL_PATH,compile=False)
+
+pickle_inn = open('num_class_herbal.pkl','rb')
+num_classes_bird = pickle.load(pickle_inn)
+
+def allowed_file(filename):     
+  return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+class index(Resource):
+  def post(self):
+
+    if 'image' not in request.files:
+      flash('No file part')
+      return jsonify({
+            "pesan":"tidak ada form image"
+          })
+    file = request.files['image']
+    if file.filename == '':
+      return jsonify({
+            "pesan":"tidak ada file image yang dipilih"
+          })
+    if file and allowed_file(file.filename):
+      path_del = r"static/tempimg\\"
+      for file_name in os.listdir(path_del):
+        # construct full file path
+        file_del = path_del + file_name
+        if os.path.isfile(file_del):
+            print('Deleting file:', file_del)
+            os.remove(file_del)
+            print("file "+file_del+" telah terhapus")
+      filename = secure_filename(file.filename)
+      file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+      path=("static/tempimg/"+filename)
+      today = date.today()
+      db.riwayat.insert_one({'nama_file': filename, 'path': path, 'prediksi':'No predict', 'akurasi':0, 'tanggal':today.strftime("%d/%m/%Y")})
+
+      img=keras.utils.load_img(path,target_size=(224,224))
+      img1=keras.utils.img_to_array(img)
+      img1=img1/255
+      img1=np.expand_dims(img1,[0])
+
+      predict=model.predict(img1)
+      classes=np.argmax(predict,axis=1)
+      for key,values in num_classes_bird.items():
+          if classes==values:
+            accuracy = float(round(np.max(model.predict(img1))*100,2))
+            info = db['tanamanHerbal'].find_one({'nama': str(key)})
+            db.riwayat.update_one({'nama_file': filename}, 
+              {"$set": {
+                'prediksi': str(key), 
+                'akurasi':accuracy
+              }
+              })
+            if accuracy >75:
+              print("Hasil prediksi tanaman herbal: "+str(key)+" dengan probabilitas "+str(accuracy)+"%")
+        
+              return jsonify({
+                "nama":str(key),
+                "Accuracy":str(accuracy)+"%",
+                "deskripsi": info['deskripsi'],
+                "khasiat" : info['khasiat']       
+                
+              })
+            else :
+              print("Hasil prediksi tanaman herbal: "+str(key)+" dengan probabilitas "+str(accuracy)+"%")
+              return jsonify({
+                "Message":str("Ini bukan tanaman herbal"),
+                "Accuracy":str(accuracy)+"%"               
+                
+              })
+      
+      else:
+       return jsonify({
+        "Message":"bukan file image"
+      })
+
+
+api.add_resource(index, "/api/image", methods=["POST"])

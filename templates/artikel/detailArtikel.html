@@ -1,0 +1,61 @@
+{% include 'include.html' %}
+
+<style>
+    .card-img-top {
+        height: 150px;
+        object-fit: cover;
+    }
+</style>
+
+<header id="header" class="header fixed-top d-flex align-items-center">
+  {% include 'components/navbar.html' %}
+</header>
+
+
+<title>{{ artikel.judul }}</title>
+
+<section class="herb-list artikelDetail" style="background-color: #F5F6F8;">
+    <div class="tab-content container" data-aos="fade-up" data-aos-delay="300" style="margin-top:54px">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/daftarArtikel">Daftar Artikel</a></li>
+              <li class="breadcrumb-item active" aria-current="page">{{ artikel.judul }}</li>
+            </ol>
+          </nav>
+    </div>
+</section>
+
+<div class="container" >
+    <div class="row">
+        <div class="col-7">
+            <div class="card mb-4 shadow-sm border-0" style="border-radius: 1rem;">
+                <div class="card-body">
+                    <div class="row mt-3">
+                        <div style="padding:1rem 2rem 2rem 2rem">
+                            <img class="card-img-top mb-4" style="width:100%;height: 300px;border-radius:18px;" src="../static/img/artikel/{{ artikel.path }}" class="herb-img img-fluid" alt="">
+                            <h3>{{ artikel.judul }}</h3><br>
+                            {% for paragraph in artikel.isi %}
+                                {% for line in paragraph.split('\n') %}
+                                    {% if line.strip() != '' %}
+                                        <p style="margin-top:1rem">{{ line }}</p>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-1">
+
+        </div>
+        <div class="col-4">
+            {% include 'artikel/artikelLain.html' %}
+        </div>
+    </div> 
+</div>
+
+<footer id="footer" class="footer">
+    {% include 'components/footer.html' %}
+  </footer>
+

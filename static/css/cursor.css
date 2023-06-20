@@ -1,0 +1,36 @@
+html {
+    --primary: #325721;
+    --cursor: #EFAC48;
+}
+
+* {
+    cursor: none;
+}
+ 
+#pointer-dot {
+    cursor: none;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    border: 2.5px solid var(--primary);
+    position: fixed;
+    border-radius: 4px;
+    z-index: 101;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+#pointer-ring {
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    padding: 15px;
+    background-color: var(--cursor);
+    position: fixed;
+    border-radius: 100px;
+    z-index: 102;
+    pointer-events: none;
+    z-index: 9999;
+}

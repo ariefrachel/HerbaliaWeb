@@ -1,0 +1,170 @@
+{% include 'include.html' %}
+
+<style>
+    .body {
+        height: 100vh;
+        background-image: url('../../../static/img/admin/bgAdmin.jpg');
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-attachment: fixed;
+    }
+    .card {
+        padding:1rem 0;
+    }
+    .card-img-top {
+        width: 90px;
+        padding:.5rem;
+    }
+    @media only screen and (max-width: 768px) {
+        .body {
+            height: inherit;
+        }
+    }
+</style>
+
+
+<div class="body">
+    {% include 'admin/components/navbar.html' %}
+
+    <section id="header" class="jumbotron text-center mb-5" style="height: 150px;">
+       <h1 class="display-3">Admin Herbalia</h1>
+    </section>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-3 col-lg-4 col-sm-12 col-md-6" data-aos="flip-left">
+                <div class="card mb-4 shadow-sm border-0" style="border-radius:1rem;">
+                    <div class="card-body row">
+                        <div class="col-4">
+                            <img class="card-img-top" src="../../../static/img/admin/profil.png" alt="Image" style="border-radius:1rem 1rem 0 0;">
+                        </div>
+                        <div class="col-8">
+                            <div class="ms-2">
+                                <h5 class="card-title">Profil</h5>
+                                <div class="row mt-3">
+                                    <div class="col-8">
+                                        <a href="/profil" class="btn btn-sm btn-primary">Lihat</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-4 col-sm-12 col-md-6" data-aos="flip-left" data-aos-delay="50">
+                <div class="card mb-4 shadow-sm border-0" style="border-radius:1rem;">
+                    <div class="card-body row">
+                        <div class="col-4">
+                            <img class="card-img-top" src="../../../static/img/admin/tanaman.png" alt="Image" style="border-radius:1rem 1rem 0 0;">
+                        </div>
+                        <div class="col-8">
+                            <div class="ms-2">
+                                <h5 class="card-title">Data Tanaman</h5>
+                                <div class="row mt-3">
+                                    <div class="col-8">
+                                        <a href="/adminTanaman" class="btn btn-sm btn-primary">Lihat</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-4 col-sm-12 col-md-6" data-aos="flip-left" data-aos-delay="50">
+                <div class="card mb-4 shadow-sm border-0" style="border-radius:1rem;">
+                    <div class="card-body row">
+                        <div class="col-4">
+                            <img class="card-img-top" src="../../../static/img/admin/tanaman.png" alt="Image" style="border-radius:1rem 1rem 0 0;">
+                        </div>
+                        <div class="col-8">
+                            <div class="ms-2">
+                                <h5 class="card-title">Saran</h5>
+                                <div class="row mt-3">
+                                    <div class="col-8">
+                                        <a href="/adminSaran" class="btn btn-sm btn-primary">Lihat</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-4 col-sm-12 col-md-6" data-aos="flip-left" data-aos-delay="100">
+                <div class="card mb-4 shadow-sm border-0" style="border-radius:1rem;">
+                    <div class="card-body row">
+                        <div class="col-4">
+                            <img class="card-img-top" src="../../../static/img/admin/riwayat.png" alt="Image" style="border-radius:1rem 1rem 0 0;">
+                        </div>
+                        <div class="col-8">
+                            <div class="ms-2">
+                                <h5 class="card-title">Riwayat</h5>
+                                <div class="row mt-3">
+                                    <div class="col-8">
+                                        <a href="/riwayat" class="btn btn-sm btn-primary">Lihat</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-4 col-sm-12 col-md-6" data-aos="flip-left" data-aos-delay="150">
+                <div class="card mb-4 shadow-sm border-0" style="border-radius:1rem;">
+                    <div class="card-body row">
+                        <div class="col-4">
+                            <img class="card-img-top" src="../../../static/img/admin/fitur.png" alt="Image" style="border-radius:1rem 1rem 0 0;">
+                        </div>
+                        <div class="col-8">
+                            <div class="ms-2">
+                                <h5 class="card-title">Fitur</h5>
+                                <div class="row mt-3">
+                                    <div class="col-8">
+                                        <a href="/adminFitur" class="btn btn-sm btn-primary">Lihat</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-4 col-sm-12 col-md-6" data-aos="flip-left" data-aos-delay="200">
+                <div class="card mb-4 shadow-sm border-0" style="border-radius:1rem;">
+                    <div class="card-body row">
+                        <div class="col-4">
+                            <img class="card-img-top" src="../../../static/img/admin/artikel.png" alt="Image" style="border-radius:1rem 1rem 0 0;">
+                        </div>
+                        <div class="col-8">
+                            <div class="ms-2">
+                                <h5 class="card-title">Artikel</h5>
+                                <div class="row mt-3">
+                                    <div class="col-8">
+                                        <a href="/adminArtikel" class="btn btn-sm btn-primary">Lihat</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-lg-4 col-sm-12 col-md-6" data-aos="flip-left" data-aos-delay="300">
+                <div class="card mb-4 shadow-sm border-0" style="border-radius:1rem;">
+                    <div class="card-body row">
+                        <div class="col-4">
+                            <img class="card-img-top" src="../../../static/img/admin/faq.png" alt="Image" style="border-radius:1rem 1rem 0 0;">
+                        </div>
+                        <div class="col-8">
+                            <div class="ms-2">
+                                <h5 class="card-title">FaQ</h5>
+                                <div class="row mt-3">
+                                    <div class="col-8">
+                                        <a href="/adminFaq" class="btn btn-sm btn-primary">Lihat</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

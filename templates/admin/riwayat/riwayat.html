@@ -1,0 +1,64 @@
+{% include 'include.html' %}
+
+<style>
+    .card-img-top {
+        height: 150px;
+        object-fit: cover;
+    }
+</style>
+
+{% include 'admin/components/navbar.html' %}
+
+
+<div class="container mt-5">
+    <h2>Riwayat</h2>
+    <form class="mb-4 row">
+        <div class="col-sm-6 col-12 filterAkurasi mt-4">
+            <a href="/riwayat?akurasi=all" class="btn btn-secondary">Semua</a>
+            <a href="/riwayat?akurasi=high" class="btn btn-secondary ms-2">Akurasi Tinggi</a>
+            <a href="/riwayat?akurasi=low" class="btn btn-secondary ms-2">Akurasi Rendah</a>
+        </div>
+        <div class="col-sm-6 col-12 form-group" >
+            <label for="tanggalFilter">Filter Tanggal:</label>
+            <input type="date" id="tanggalFilter" class="form-control" onchange="filterRiwayatByTanggal()">
+        </div>
+    </form>
+    <div>
+        <div class="row">
+            {% for riwayat in riwayat %}
+            <div class="col-xl-3 col-lg-4 col-sm-12 col-md-6 gy-4" data-aos="zoom-in-up" data-aos-delay="50">
+                <div class="card mb-4 shadow-sm border-0" style="border-radius: 1rem;">
+                    <img class="card-img-top" src="{{ riwayat.path }}" alt="Image" style="border-radius: 1rem 1rem 0 0;">
+                    <div class="card-body">
+                        <h5 class="card-title">Hasil: {{ riwayat.hasil }}</h5>
+                        <p class="card-text">Akurasi: {{ riwayat.akurasi }}%</p>
+                        <p class="card-text">Tanggal: {{ riwayat.tanggal }}</p>
+                        <div class="row mt-3">
+                            <div class="col-8">
+                                <a href="{{ riwayat.path }}" download="hasil_{{ riwayat.hasil.replace(' ', '_') }}_{{ riwayat.akurasi }}.jpg" class="btn btn-sm btn-primary" style="border:none">Download gambar</a>
+                            </div>
+                            <div class="col-4 text-end">
+                                <form method="post" action="/hapusRiwayat/{{ riwayat._id }}">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <button type="submit" class="btn btn-sm btn-primary btn-circle" style="background-color:rgb(182, 110, 110);border:none">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+    <script>
+        function filterRiwayatByTanggal() {
+            var tanggalFilter = document.getElementById("tanggalFilter").value;
+            window.location.href = "/riwayat?tanggal=" + tanggalFilter;
+        }
+    </script>
+

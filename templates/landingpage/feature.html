@@ -1,0 +1,26 @@
+<section id="about" class="about-us section-bg" style="padding-top:42px;">
+    <div class="container" data-aos="fade-up">
+
+      <div class="row gy-4">
+
+
+        <div class="col-lg-12 d-flex align-items-center">
+          <div class="row gy-4">
+            {% for fitur in fitur %}
+            <div class="col-xl-3" data-aos="fade-up" data-aos-delay="200" data-aos-anchor-placement="top-bottom">
+              <div class="icon-box d-flex flex-column justify-content-center align-items-center">
+                <img src="../../static/img/feature/{{fitur.path}}" style="width:100%">
+                <!-- <img src="../../static/img/feature/feature1.png" style="width:100%"> -->
+                <br/>
+                <p>{{fitur.caption}}</p>
+              </div>
+            </div>
+            {% endfor %}
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>

@@ -1,0 +1,33 @@
+<section class="herb-list mt-5" style="background-color: #FFF;">
+    
+    <div class="tab-content container" data-aos="fade-up" data-aos-delay="300" style="margin-top:12px">
+        <h3 data-aos="fade-up" class="mb-5">Tanaman Herbal lainnya</h3>
+      <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          {% set tanamanList = tanaman|list %}
+          {% for i in range(0, tanamanList|length, 4) %}
+            <div class="carousel-item {% if loop.index == 1 %}active{% endif %}">
+              <div class="row gy-5">
+                {% for tanaman in tanamanList[i:i+4] %}
+                  <div class="col-lg-3 herb-item" data-aos="zoom-in">
+                    <a href="/daftarTanaman/{{ tanaman._id }}"><img style="width:100%" src="../static/img/list/perennial/{{tanaman.path}}" class="herb-img img-fluid" alt=""></a>
+                    <h4>{{tanaman.nama}}</h4>
+                    <p style="font-style: italic;">({{tanaman.namailmiah}})</p>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </a>
+      </div>
+    </div>
+  </section>
+  

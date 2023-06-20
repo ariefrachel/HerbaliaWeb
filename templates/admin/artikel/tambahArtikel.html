@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tambah Artikel</title>
+    <script src="https://cdn.ckeditor.com/ckeditor5/32.0.0/classic/ckeditor.js"></script>
+</head>
+<body>
+    {% include 'admin/components/navbar.html' %}
+    <h1>Tambah Artikel</h1>
+    <form action="/adminArtikel/new" method="POST" enctype="multipart/form-data">
+        <label for="judul">Judul:</label>
+        <input type="text" name="judul" id="judul" required>
+        <br><br>
+        <label for="isi">Isi:</label>
+        <textarea name="isi" id="editor" ></textarea>
+        <br><br>
+        <label for="path">Gambar:</label>
+        <input type="file" name="path" id="path" accept="image/*">
+        <br><br>
+        <input type="submit" value="Tambah Data">
+    </form>
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#editor'), {
+                toolbar: {
+                    items: [
+                        'heading',
+                        '|',
+                        'bold',
+                        'italic',
+                        'underline',
+                        'link',
+                        '|',
+                        'bulletedList',
+                        'numberedList',
+                        '|',
+                        'indent',
+                        'outdent',
+                        '|',
+                        'undo',
+                        'redo'
+                    ]
+                },
+                language: 'en',
+                indentBlock: {
+                    offset: 1, // Jumlah spasi indentasi
+                    unit: 'em' // Satuan indentasi (misalnya px, em)
+                },
+                image: {
+                    toolbar: ['imageTextAlternative', '|', 'imageStyle:alignLeft', 'imageStyle:full', 'imageStyle:alignRight'],
+                    styles: [
+                        'full',
+                        'alignLeft',
+                        'alignRight'
+                    ]
+                },
+                table: {
+                    contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells']
+                },
+                licenseKey: '',
+                typing: {
+                    // Menambahkan jarak paragraf saat menekan Enter
+                    insertBreak: {
+                        breakType: 'paragraph',
+                        shiftEnter: false,
+                        indentClass: 'ck-indent',
+                    }
+                }
+            })
+            .then(editor => {
+                console.log('Editor berhasil diinisialisasi', editor);
+            })
+            .catch(error => {
+                console.error('Terjadi kesalahan saat menginisialisasi editor', error);
+            });
+    </script>
+</body>
+</html>

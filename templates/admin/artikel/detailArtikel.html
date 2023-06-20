@@ -1,0 +1,12 @@
+{% include 'include.html' %}
+{% include 'admin/components/navbar.html' %}
+    <h1>{{ artikel.judul }}</h1>
+    <div class="artikelKonten">
+        <p>{{ artikel.isi }}</p>
+    </div>
+    <a href="/adminArtikel/edit/{{ artikel._id }}">Edit</a>
+    <form method="post" action="/adminArtikel/delete/{{ artikel._id }}" style="display: inline;">
+        <input type="hidden" name="_method" value="DELETE">
+        <button type="submit">Hapus</button>
+    </form>
+    <a href="/adminArtikel">Kembali ke Daftar Artikel</a>

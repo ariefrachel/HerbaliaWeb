@@ -1,0 +1,30 @@
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<div class="container" style="margin-bottom: 120px;">
+    <h1>FaQ <span style="opacity: .7;font-size: 18px;">( Frequently Ask Question )</span></h1>
+    <br>
+    <div id="accordion">
+        {% for faq in faqData %}
+            <div class="card" style="background-color: #fff;margin-bottom:2rem">
+                <div class="card-header" id="heading{{ faq._id }}">
+                    <h5 class="mb-0">
+                        <button class="btn " data-toggle="collapse" data-target="#collapse{{ faq._id }}" aria-expanded="true" aria-controls="collapse{{ faq._id }}">
+                            {{ faq.pertanyaan }}
+                        </button>
+                    </h5>
+                </div>
+
+                <div id="collapse{{ faq._id }}" class="collapse" aria-labelledby="heading{{ faq._id }}" data-parent="#accordion">
+                    <div class="card-body">
+                        {{ faq.jawaban }}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <br><hr>
+    <span>Untuk lebih detailnya, bisa kamu tanyakan dengan Herby ya (ada di pojok kanan bawah web ini)</span>
+</div>

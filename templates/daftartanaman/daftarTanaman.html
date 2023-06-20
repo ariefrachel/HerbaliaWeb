@@ -1,0 +1,33 @@
+<section id="herb-list" class="herb-list daftarTanaman" style="background-color: #F5F6F8;">
+    <div class="container" data-aos="fade-up" style="margin-top:72px">
+      <div class="section-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <h1 data-aos="fade-up">Daftar Tanaman Herbal</h1>
+          <form action="/daftarTanaman/search" method="GET" class="d-flex">
+            <input class="form-control me-2" type="text" name="query" placeholder="Cari tanaman...">
+            <button type="submit" class="btn btn-primary">Cari</button>
+        </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="herb-list" style="background-color: #FFF;">
+    <div class="tab-content container" data-aos="fade-up" data-aos-delay="300" style="margin-top:12px">
+
+        <div class="tab-pane fade active show" id="herb-tabs">
+
+        <div class="row gy-5">
+            {% for tanaman in dataTanaman %}
+            <div class="col-lg-3 herb-item" data-aos="zoom-in">
+            <a href="/daftarTanaman/{{ tanaman._id }}"><img style="width:100%" src="../static/img/list/perennial/{{tanaman.path}}" class="herb-img img-fluid" alt=""></a>
+            <h4>{{tanaman.nama}}</h4>
+            <p style="font-style: italic;">({{tanaman.namailmiah}})</p>
+            </div>
+            {% endfor %}
+
+        </div>
+        </div>
+
+    </div>
+</section>

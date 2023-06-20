@@ -1,0 +1,40 @@
+{% include 'include.html' %}
+{% include 'admin/components/navbar.html' %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Artikel</title>
+    <script src="https://cdn.tiny.cloud/1/<YOUR_API_KEY>/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            height: 300,
+            plugins: [
+                'advlist autolink lists link image charmap print preview anchor',
+                'searchreplace visualblocks code fullscreen',
+                'insertdatetime media table paste code help wordcount'
+            ],
+            toolbar: 'undo redo | formatselect | bold italic backcolor | \
+                alignleft aligncenter alignright alignjustify | \
+                bullist numlist outdent indent | removeformat | help'
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Artikel</h1>
+    <!-- edit_article.html -->
+        <form method="post" action="/adminArtikel/edit/{{ artikel._id }}" enctype="multipart/form-data">
+            <label for="title">Judul:</label><br>
+            <input type="text" id="title" name="judul" value="{{ artikel.judul }}"><br><br>
+            <label for="content">Konten:</label><br>
+            <textarea id="content" name="isi" rows="4" cols="50">{{ artikel.isi }}</textarea><br><br>
+            <label for="image">Gambar:</label><br>
+            <input type="file" id="image" name="path"><br><br>
+            <input type="submit" value="Simpan">
+        </form>
+
+        <a href="/adminArtikel">Kembali ke Daftar Artikel</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{% include 'include.html' %}
+
+{% include 'admin/components/navbar.html' %}
+
+<div class="container">
+  <div class="row flex-lg-row-reverse align-items-center">
+      <div class="col-12">
+          <div class="landingabout">
+              <h2 data-aos="fade-up" data-aos-delay="100" data-aos-anchor-placement="top-bottom">Apa itu Herbalia?</h2>
+              <br>
+              {% for profil in profils %}
+              <p data-aos="fade-up" data-aos-delay="300" data-aos-anchor-placement="top-bottom">{{ profil.profil }}</p>
+              <a href="/editProfil/{{ profil._id }}" class="btn btn-warning">Edit Profil</a>
+              {% endfor %}
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- Masukkan tautan ke JavaScript SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+  // Jika ada parameter "success" pada URL, tampilkan SweetAlert
+  const urlParams = new URLSearchParams(window.location.search);
+  const successMessage = urlParams.get('success');
+  if (successMessage === 'true') {
+      Swal.fire({
+          icon: 'success',
+          title: 'Profil berhasil diubah',
+          confirmButtonText: 'OK'
+      }).then(() => {
+          // Hapus parameter "success" dari URL agar SweetAlert tidak ditampilkan lagi saat halaman diperbarui
+          window.history.replaceState({}, document.title, window.location.pathname);
+      });
+  }
+</script>

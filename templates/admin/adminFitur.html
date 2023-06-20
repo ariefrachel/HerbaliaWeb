@@ -1,0 +1,105 @@
+{% include 'include.html' %}
+
+{% include 'admin/components/navbar.html' %}
+
+<div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Tambah Daftar Fitur</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action = "{{ url_for('uploadFitur') }}" method = "POST" enctype = "multipart/form-data">
+            <div class="modal-body container">
+                <label for="floatingInput">Upload gambar</label>
+                <input type="file" name="path" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+                <br>
+                <label for="floatingInput">Caption</label>
+                <textarea class="form-control" name="caption" placeholder="Tulis deskripsi singkat fitur" id="floatingTextarea2" style="height: 100px"></textarea>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kembali</button>
+            <input type="submit" class="btn btn-primary" value="Tambah Data">
+            </div>
+        </form>
+      </div>
+    </div>
+</div>
+
+
+
+<section id="about" class="about-us section-bg" style="padding-top:42px;">
+    <div class="container" data-aos="fade-up">
+        <div class="d-flex justify-content-between">
+            <h3>Daftar Fitur pada Herbalia</h3>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Tambah Data
+            </button>
+
+          
+        </div>
+
+        <br><hr><br>
+      <div class="row gy-4">
+        <div class="col-lg-12 d-flex align-items-center">
+          <div class="row gy-4">
+            {% for fitur in fitur_list %}
+            <div class="col-xl-3" data-aos="fade-up" data-aos-delay="200" data-aos-anchor-placement="top-bottom">
+              <div class="icon-box d-flex flex-column justify-content-center align-items-center">
+                <img src="../../static/img/feature/{{fitur.path}}" style="width:100%">
+                <!-- <img src="../../static/img/feature/feature1.png" style="width:100%"> -->
+                <br/>
+                <p>{{fitur.caption}}</p>
+                <div class="row">
+                    
+                    <div class="col-6"><button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editModal{{ fitur._id }}">Edit</button></div>
+                    <div class="col-6">
+                      <form method="post" action="/delete/{{ fitur._id }}">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn btn-danger">Hapus</button>
+                      </form>
+                    </div>
+                    
+                </div>
+                
+              </div>
+              
+            </div>
+            <div class="modal fade" id="editModal{{ fitur._id }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel{{ fitur._id }}" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <h5 class="modal-title" id="editModalLabel{{ fitur._id }}">Edit Data</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                          </button>
+                      </div>
+                      <div class="modal-body">
+                          <form method="post" enctype="multipart/form-data" action="/editFitur/{{ fitur._id }}">
+                              <label for="text">Caption</label><br>
+                              <textarea id="text" name="caption" rows="4" cols="50">{{ fitur.caption }}</textarea><br><br>
+                              <label for="image">File gambar</label><br>
+                              <input type="file" id="image" name="path"><br><br>
+                              <input type="submit" class="btn btn-primary" value="Submit">
+                          </form>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          
+            {% endfor %}
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+
+
+
+

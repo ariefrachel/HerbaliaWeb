@@ -1,0 +1,32 @@
+<section id="articles" class="articles">
+        <div class="container-fluid" data-aos="fade-up">
+  
+          <div class="section-header">
+            <div class="d-flex justify-content-between container">
+              <h1 data-aos="fade-up">Artikel dan Tips Untukmu</h1>
+              <button class="morebutton learn-more">
+                <span class="circle" aria-hidden="true">
+                  <span class="icon arrow"></span>
+                </span>
+                <span class="button-text">Lihat Semua</span>
+              </button>
+            </div>
+    
+          </div>
+          <br>
+          <div class="slides-3 swiper" data-aos="fade-up" data-aos-delay="100">
+            <div class="swiper-wrapper">
+              {% for artikel in artikel %}
+              <div class="swiper-slide article-item d-flex flex-column justify-content-end" style="background-image: url(../static/img/artikel/{{artikel.path}})">
+                <h3>{{artikel.judul}}</h3>
+
+                <p class="description" style="margin-top: 21px;"><a href="/daftarArtikel/{{ artikel._id }}" class="btn-primary">Baca Artikel</a></p>
+              </div>
+              {%endfor%}
+            </div>
+            <div class="swiper-pagination"></div>
+          </div>
+  
+        </div>
+      </section>
+  

@@ -1,0 +1,47 @@
+{% include 'include.html' %}
+
+
+    <title>{{ detailTanaman.nama }}</title>
+
+    {% include 'admin/components/navbar.html' %}
+
+    <section class="herb-list daftarTanaman" style="background-color: #F5F6F8;">
+        <div class="tab-content container" data-aos="fade-up" data-aos-delay="300" >
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="/adminTanaman">Daftar Tanaman</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">{{ detailTanaman.nama }}</li>
+                </ol>
+              </nav>
+            <div class="tab-pane fade active show" id="herb-tabs">
+                <h1>{{ detailTanaman.nama }}</h1>
+            </div>
+        </div>
+    </section>
+
+    <section class="herb-list" style="background-color: #FFFF;">
+        <div class="tab-content container" data-aos="fade-up" data-aos-delay="300">
+            <div class="tab-pane fade active show" id="herb-tabs">
+                <div class="row">
+                    <div class="col-3">
+                        <img style="width:100%" src="../static/img/list/perennial/{{detailTanaman.path}}" class="herb-img img-fluid" alt="">
+                    </div>
+                    <div class="col-1"></div>
+                    <div class="col-8">
+                        <h5>Deskripsi</h5>
+                        <p>{{ detailTanaman.deskripsi }}</p>
+                        <br>
+                        <h5>Khasiat</h5>
+                        <ul>
+                            {% for khasiat in khasiatList %}
+                            <li>{{ khasiat }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+
+
