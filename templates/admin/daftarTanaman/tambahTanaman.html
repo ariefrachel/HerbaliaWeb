@@ -14,7 +14,7 @@
 </head>
 <body>
     <h1>Tambah Tanaman Herbal</h1>
-    <form method="POST" action="/tambah_tanaman">
+    <form method="POST" enctype="multipart/form-data" action="/tambah_tanaman">
         <label for="nama">Nama Tanaman:</label><br>
         <input type="text" id="nama" name="nama" required><br><br>
         <label for="nama_ilmiah">Nama Ilmiah:</label><br>
@@ -28,7 +28,13 @@
         <br>
         <button type="button" id="tambah_khasiat">Tambah Khasiat</button>
         <br><br>
+        <div class="form-group">
+            <label for="gambar">Gambar:</label>
+            <input type="file" class="form-control-file" id="gambar" name="gambar" required>
+        </div>
         <input type="submit" value="Tambahkan">
     </form>
+
+      
 </body>
 </html>

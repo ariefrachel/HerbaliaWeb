@@ -51,6 +51,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 api = Api(app)
 
+app.config['UPLOAD_TANAMAN'] = 'static/img/list/'
 app.config['UPLOAD_FITUR'] = 'static/img/feature/'
 app.config['UPLOAD_ARTIKEL'] = 'static/img/artikel/' 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -397,24 +398,26 @@ def tambah_tanaman():
         nama_ilmiah = request.form['nama_ilmiah']
         deskripsi = request.form['deskripsi']
         khasiat = request.form.getlist('khasiat[]')
+        file = request.files['gambar']
 
-        # Menyimpan khasiat ke koleksi "khasiat"
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_TANAMAN'], filename))
+
         khasiat_data = {
-            'tanaman_id': None,  # ID tanaman akan diperbarui setelah disimpan
+            'tanaman_id': None,
             'khasiat': khasiat
         }
         khasiat_id = db['khasiat'].insert_one(khasiat_data).inserted_id
 
-        # Menyimpan tanaman herbal dengan ID khasiat yang terhubung
         tanaman_herbal = {
             'nama': nama,
             'namailmiah': nama_ilmiah,
             'deskripsi': deskripsi,
-            'khasiat': khasiat_id
+            'khasiat': khasiat_id,
+            'path': filename
         }
         tanaman_id = db['tanamanHerbal'].insert_one(tanaman_herbal).inserted_id
 
-        # Memperbarui ID tanaman pada dokumen khasiat
         db['khasiat'].update_one(
             {'_id': khasiat_id},
             {'$set': {'tanaman_id': tanaman_id}}
