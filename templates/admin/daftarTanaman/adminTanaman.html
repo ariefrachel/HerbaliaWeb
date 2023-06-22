@@ -11,6 +11,7 @@
             <input class="form-control me-2" type="text" name="query" placeholder="Cari tanaman...">
             <button type="submit" class="btn btn-primary">Cari</button>
         </form>
+        <a href="/tambah_tanaman"><button type="submit" class="btn btn-primary" style="border: none;">Tambah Tanaman</button></a>
         </div>
       </div>
     </div>
@@ -27,8 +28,8 @@
             {% for tanaman in tanaman %}
             <div class="col-lg-3 herb-item" data-aos="zoom-in">
             <div class="d-flex align-items-center">
-                <a href="/adminTanaman/{{ tanaman._id }}"><img style="width:100%" src="../static/img/list/perennial/{{tanaman.path}}" class="herb-img img-fluid" alt=""></a>
-                <form method="post" action="/hapusTanaman/{{ tanaman._id }}">
+                <a href="/adminTanaman/{{ tanaman._id }}"><img style="width:100%" src="../static/img/list/{{tanaman.path}}" class="herb-img img-fluid" alt=""></a>
+                <form method="post" action="/hapus_tanaman/{{ tanaman._id }}">
                     <input type="hidden" name="_method" value="DELETE">
                     <button type="submit" class="btn btn-sm btn-primary btn-circle" style="background-color:rgb(182, 110, 110);border:none">
                         <i class="fas fa-trash"></i>

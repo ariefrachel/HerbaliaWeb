@@ -1,3 +1,6 @@
+
+{% include 'include.html' %}
+{% include 'admin/components/navbar.html' %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,34 +9,60 @@
     <script>
         $(document).ready(function() {
             $("#tambah_khasiat").click(function() {
-                var input = '<input type="text" name="khasiat[]" required><br>';
+                var input = '<input class="form-control" type="text" name="khasiat[]" required><br>';
                 $("#input_khasiat").append(input);
+            });
+            $("#tambah_referensi").click(function() {
+                var input = '<input class="form-control" type="text" name="referensi[]" required><br>';
+                $("#input_referensi").append(input);
             });
         });
     </script>
 </head>
 <body>
-    <h1>Tambah Tanaman Herbal</h1>
-    <form method="POST" enctype="multipart/form-data" action="/tambah_tanaman">
-        <label for="nama">Nama Tanaman:</label><br>
-        <input type="text" id="nama" name="nama" required><br><br>
-        <label for="nama_ilmiah">Nama Ilmiah:</label><br>
-        <input type="text" id="nama_ilmiah" name="nama_ilmiah" required><br><br>
-        <label for="deskripsi">Deskripsi:</label><br>
-        <textarea id="deskripsi" name="deskripsi" required></textarea><br><br>
-        <label for="khasiat">Khasiat:</label><br>
-        <div id="input_khasiat">
-            <input type="text" name="khasiat[]" required><br>
-        </div>
-        <br>
-        <button type="button" id="tambah_khasiat">Tambah Khasiat</button>
-        <br><br>
-        <div class="form-group">
-            <label for="gambar">Gambar:</label>
-            <input type="file" class="form-control-file" id="gambar" name="gambar" required>
-        </div>
-        <input type="submit" value="Tambahkan">
-    </form>
+    <div class="container mt-5">
+        <h2 class="mb-5">Tambah Tanaman Herbal</h2>
+        <form method="POST" enctype="multipart/form-data" action="/tambah_tanaman">
+            <div class="row">
+                <div class="col-12 col-lg-6">
+                    <label for="nama">Nama Tanaman:</label>
+                    <input class="form-control" type="text" id="nama" name="nama" required><br>
+                    <label for="nama_ilmiah">Nama Ilmiah:</label>
+                    <input class="form-control" type="text" id="nama_ilmiah" name="nama_ilmiah" required><br>
+                    <label for="deskripsi">Deskripsi:</label>
+                    <textarea class="form-control" id="deskripsi" name="deskripsi" style="height: 200px;"></textarea>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <label for="khasiat">Khasiat:</label>
+                    <div class="row">
+                        <div class="col-9" id="input_khasiat">
+                            <input class="form-control" type="text" name="khasiat[]" required>
+                        </div>
+                        <div class="col-3">
+                            <button class="btn btn-secondary" type="button" id="tambah_khasiat">+ Tambah</button>
+                        </div>
+                    </div>
+                    <br>
+                    <label for="referensi">Referensi:</label>
+                    <div class="row">
+                        <div class="col-9" id="input_referensi">
+                            <input class="form-control" type="text" name="referensi[]" required>
+                        </div>
+                        <div class="col-3">
+                            <button  class="btn btn-secondary" type="button" id="tambah_referensi">+ Tambah</button>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label for="gambar">Gambar:</label>
+                        <input type="file" class="form-control-file form-control" id="gambar" name="gambar" required>
+                    </div>
+                    <input class="btn btn-primary mt-4" style="border:none" type="submit" value="Tambah Tanaman Herbal">
+                </div>
+            </div>
+        </form>
+    
+    </div>
 
       
 </body>

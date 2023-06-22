@@ -245,21 +245,26 @@ def detailTanaman(daftarTanaman_id):
     dataTanaman = db['tanamanHerbal'].find()
 
     khasiat_list = []
+    referensi_list = []
+
     khasiat_id = detailTanaman.get("khasiat")
+    referensi_id = detailTanaman.get("referensi")
+
     if khasiat_id:
         khasiat = db["khasiat"].find_one({"_id": khasiat_id})
         if khasiat:
             khasiat_list = khasiat["khasiat"]
 
+    if referensi_id:
+        referensi = db["referensi"].find_one({"_id": referensi_id})
+        if referensi:
+            referensi_list = referensi["referensi"]
+
     if detailTanaman:
-        return render_template('detailTanaman.html', detailTanaman=detailTanaman, tanaman=dataTanaman, khasiatList=khasiat_list)
+        return render_template('detailTanaman.html', detailTanaman=detailTanaman, tanaman=dataTanaman, khasiatList=khasiat_list, referensiList=referensi_list)
     else:
         return 'Tanaman tidak ditemukan'
 
-# @app.route('/daftarLain', methods=['GET'])
-# def daftarLain():
-#     tanaman = db['tanamanHerbal'].find({})
-#     return render_template('daftartanaman/daftarLain.html', tanaman = tanaman)
 
 
 
@@ -378,18 +383,25 @@ def detailAdminTanaman(daftarTanaman_id):
     dataTanaman = db['tanamanHerbal'].find()
 
     khasiat_list = []
+    referensi_list = []
+
     khasiat_id = detailTanaman.get("khasiat")
+    referensi_id = detailTanaman.get("referensi")
+
     if khasiat_id:
         khasiat = db["khasiat"].find_one({"_id": khasiat_id})
         if khasiat:
             khasiat_list = khasiat["khasiat"]
 
+    if referensi_id:
+        referensi = db["referensi"].find_one({"_id": referensi_id})
+        if referensi:
+            referensi_list = referensi["referensi"]
+
     if detailTanaman:
-        return render_template('admin/daftarTanaman/adminDetailTanaman.html', detailTanaman=detailTanaman, tanaman=dataTanaman, khasiatList=khasiat_list)
+        return render_template('admin/daftarTanaman/adminDetailTanaman.html', detailTanaman=detailTanaman, tanaman=dataTanaman, khasiatList=khasiat_list, referensiList=referensi_list)
     else:
         return 'Tanaman tidak ditemukan'
-
-
 
 @app.route('/tambah_tanaman', methods=['GET', 'POST'])
 def tambah_tanaman():
@@ -398,6 +410,7 @@ def tambah_tanaman():
         nama_ilmiah = request.form['nama_ilmiah']
         deskripsi = request.form['deskripsi']
         khasiat = request.form.getlist('khasiat[]')
+        referensi = request.form.getlist('referensi[]')
         file = request.files['gambar']
 
         filename = secure_filename(file.filename)
@@ -407,14 +420,20 @@ def tambah_tanaman():
             'tanaman_id': None,
             'khasiat': khasiat
         }
+        referensi_data = {
+            'tanaman_id': None,
+            'referensi': referensi
+        }
         khasiat_id = db['khasiat'].insert_one(khasiat_data).inserted_id
+        referensi_id = db['referensi'].insert_one(referensi_data).inserted_id
 
         tanaman_herbal = {
+            'path': filename,
             'nama': nama,
             'namailmiah': nama_ilmiah,
             'deskripsi': deskripsi,
             'khasiat': khasiat_id,
-            'path': filename
+            'referensi': referensi_id
         }
         tanaman_id = db['tanamanHerbal'].insert_one(tanaman_herbal).inserted_id
 
@@ -423,9 +442,23 @@ def tambah_tanaman():
             {'$set': {'tanaman_id': tanaman_id}}
         )
 
+        db['referensi'].update_one(
+            {'_id': referensi_id},
+            {'$set': {'tanaman_id': tanaman_id}}
+        )
+
         return 'Data tanaman herbal berhasil ditambahkan'
 
     return render_template('admin/daftarTanaman/tambahTanaman.html')
+
+@app.route('/hapus_tanaman/<tanaman_id>', methods=['POST'])
+def hapus_tanaman(tanaman_id):
+    
+    db['tanamanHerbal'].delete_one({'_id': ObjectId(tanaman_id)})
+    db['khasiat'].delete_one({'tanaman_id': ObjectId(tanaman_id)})
+    db['referensi'].delete_one({'tanaman_id': ObjectId(tanaman_id)})
+    
+    return redirect('/adminTanaman')
 
 
 

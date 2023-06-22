@@ -20,7 +20,7 @@
         <div class="row gy-5">
             {% for tanaman in dataTanaman %}
             <div class="col-lg-3 herb-item" data-aos="zoom-in">
-            <a href="/daftarTanaman/{{ tanaman._id }}"><img style="width:100%" src="../static/img/list/perennial/{{tanaman.path}}" class="herb-img img-fluid" alt=""></a>
+            <a href="/daftarTanaman/{{ tanaman._id }}"><img style="width:100%" src="../static/img/list/{{tanaman.path}}" class="herb-img img-fluid" alt=""></a>
             <h4>{{tanaman.nama}}</h4>
             <p style="font-style: italic;">({{tanaman.namailmiah}})</p>
             </div>
