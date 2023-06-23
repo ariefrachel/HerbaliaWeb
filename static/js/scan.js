@@ -9,8 +9,12 @@ var accuracyText = document.getElementById('accuracy');
 var namaTanamanText = document.getElementById('namaTanaman');
 var namaIlmiahText = document.getElementById('namaIlmiah');
 var deskripsiText = document.getElementById('deskripsi');
+
 var khasiatText = document.getElementById('khasiat');
 var khasiatLabel = document.getElementById('khasiatLabel');
+
+var referensiText = document.getElementById('referensi');
+var referensiLabel = document.getElementById('referensiLabel');
 
 var uploadContainer = document.getElementById('uploadContainer');
 var imageUpload = document.getElementById('imageUpload');
@@ -80,7 +84,7 @@ function captureImage() {
                 listItem.textContent = khasiat;
                 khasiatText.appendChild(listItem);
             }
-            
+
             capturedImage.src = image;
             hasilDefault.style.display = 'none';
             capturedImage.style.display = 'block';
@@ -131,6 +135,9 @@ function handleImageUpload(file) {
                 var accuracyPercentage = Math.round(data.akurasi);
                 var accuracyValue = Math.floor(data.akurasi);
                 if (accuracyPercentage) {
+                    capturedImage.src = imageData;
+                    hasilDefault.style.display = 'none';
+                    capturedImage.style.display = 'block';
                     labelAkurasiText.style.display = 'block';
                     accuracyText.textContent = accuracyValue + '%';
                     labelNamaTanamanText.style.display = 'block';
@@ -147,10 +154,29 @@ function handleImageUpload(file) {
                         listItem.textContent = khasiat;
                         khasiatText.appendChild(listItem);
                     }
-                    
-                    capturedImage.src = imageData;
-                    hasilDefault.style.display = 'none';
-                    capturedImage.style.display = 'block';
+
+                    referensiLabel.style.display = 'block';
+
+                    referensiText.innerHTML = "";
+
+                    for (var i = 0; i < data.referensi.length; i++) {
+                        var referensiUrl = data.referensi[i];
+                        var iframe = document.createElement('iframe');
+                        iframe.src = referensiUrl;
+                        iframe.classList.add('embed-responsive-item')
+                        iframe.frameborder = '20';
+                        iframe.allowfullscreen = true;
+                        iframe.style.borderRadius = '20px'
+                        var wrapper = document.createElement('div');
+                        var item = document.createElement('div');
+                        wrapper.classList.add('video-wrapper');
+                        item.classList.add('item');
+                        item.appendChild(wrapper);
+                        wrapper.appendChild(iframe);
+                      
+                        referensiText.appendChild(item);
+                      }
+
                 } else {
                     labelAkurasiText.style.display = 'none';
                     namaTanamanText.textContent = 'Tanaman herbal tidak teridentifikasi';
@@ -170,6 +196,28 @@ function handleImageUpload(file) {
     reader.readAsDataURL(file);
 }
 
+
+// $(document).ready(function() {
+//     $('.owl-carousel').owlCarousel({
+//       loop: true,
+//       margin: 10,
+//       nav: true,
+//       dots: false,
+//       navText: ['<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>'],
+//       responsive: {
+//         0: {
+//           items: 1
+//         },
+//         600: {
+//           items: 2
+//         },
+//         1000: {
+//           items: 3
+//         }
+//       }
+//     });
+//   });
+  
 
 function handleDragOver(event) {
     event.preventDefault();

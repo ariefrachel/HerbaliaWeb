@@ -192,7 +192,7 @@ body {
   font-weight: 700;
 }
 
-#akurasiLabel, #namaTanamanLabel, #khasiatLabel {
+#akurasiLabel, #namaTanamanLabel, #khasiatLabel, #referensiLabel {
   display: none;
 }
 

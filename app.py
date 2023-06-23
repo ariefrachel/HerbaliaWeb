@@ -127,10 +127,15 @@ def scan():
             nama_ilmiah = tanaman_herbal['namailmiah']
             deskripsi = tanaman_herbal['deskripsi']
             khasiat_id = tanaman_herbal['khasiat']
+            referensi_id = tanaman_herbal['referensi']
 
             khasiat = db.khasiat.find_one({'_id': khasiat_id})
             if khasiat:
                 khasiat_list = khasiat['khasiat']
+
+            referensi = db.referensi.find_one({'_id': referensi_id})
+            if referensi:
+                referensi_list = referensi['referensi']
 
         image_filename = f"hasil_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg"
         image_path = os.path.join(UPLOAD_DIR, image_filename)
@@ -152,6 +157,7 @@ def scan():
             'namailmiah': nama_ilmiah,
             'deskripsi': deskripsi,
             'khasiat': khasiat_list,
+            'referensi': referensi_list,
             'akurasi': result["predict_accuracy"]
         }
         return jsonify(response_data)
@@ -447,7 +453,7 @@ def tambah_tanaman():
             {'$set': {'tanaman_id': tanaman_id}}
         )
 
-        return 'Data tanaman herbal berhasil ditambahkan'
+        return render_template('admin/daftarTanaman/adminTanaman.html')
 
     return render_template('admin/daftarTanaman/tambahTanaman.html')
 
