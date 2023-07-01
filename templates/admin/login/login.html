@@ -1,0 +1,21 @@
+{% include 'include.html' %}
+
+<div class="container mt-5">
+    <h1>Login</h1><br>
+    {% if error %}
+        <div class="alert alert-danger" role="alert">Invalid username or password.</div>
+    {% endif %}
+    <form method="POST" action="/login">
+        <div class="form-group">
+            <label for="username">Username:</label><br>
+            <input type="text" class="form-control" id="username" name="username" required>
+        </div>
+        <br>
+        <div class="form-group">
+            <label for="password">Password:</label><br>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+</div>
+

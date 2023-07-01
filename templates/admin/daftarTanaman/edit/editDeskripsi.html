@@ -1,0 +1,17 @@
+{% include 'include.html' %}
+
+{% include 'admin/components/navbar.html' %}
+
+    <div class="container mt-5">
+        <h1>Edit Profil</h1><br>
+        <form method="post" action="/adminTanaman/editDeskripsi/{{ editTanaman._id }}">
+
+            <div class="form-group">
+                <label for="deskripsi">Deskripsi:</label>
+                <textarea style="height:300px" class="form-control" id="profil" name="deskripsi" required>{{ editTanaman.deskripsi }}</textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-5">Simpan Perubahan</button>
+        </form>
+    </div>
+ 

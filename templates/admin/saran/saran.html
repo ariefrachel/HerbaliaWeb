@@ -10,40 +10,58 @@
 {% include 'admin/components/navbar.html' %}
 
 
-<div class="container mt-5">
-    <h2>Saran</h2>
-    <form class="mb-4 row">
-        <div class="col-sm-6 col-12 form-group" >
-            <label for="tanggalFilterSaran">Filter Tanggal:</label>
-            <input type="date" id="tanggalFilterSaran" class="form-control" onchange="filterSaranByTanggal()">
-        </div>
-    </form>
-    <div>
-        <div class="row">
+
+<section id="about" class="about-us section-bg" style="padding-top:42px;">
+    <div class="container" data-aos="fade-up">
+        <form class="mb-4 row d-flex justify-content-between align-items-center">
+            <h3>Saran dari pengguna</h3>
+            <div class="col-sm-6 col-12 form-group" >
+                <label for="tanggalFilterSaran">Filter Tanggal:</label>
+                <input type="date" id="tanggalFilterSaran" class="form-control" onchange="filterSaranByTanggal()">
+            </div>
+        </form>
+
+        <br><hr><br>
+        <div class="container">
+          <div class="row">
             {% for saran in adminSaran %}
-            <div class="col-xl-3 col-lg-4 col-sm-12 col-md-6 gy-4" data-aos="zoom-in-up" data-aos-delay="50">
-                <div class="card mb-4 shadow-sm border-0" style="border-radius: 1rem;">
-                    <img class="card-img-top" src="../../static/img/saran/{{ saran.gambar }}" alt="Image" style="border-radius: 1rem 1rem 0 0;">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h5 class="card-title">{{ saran.nama }}</h5>
-                                <p class="card-text">Tanggal: {{ saran.tanggal }}</p>
-                            </div>
+            <div class="col-lg-6" data-aos="fade-up">
+              <div class="row">
+
+                <div class="col-12">
+                  <div class="landingarticles">
+                    <div class="row">
+                      <div class="col-lg-8">
+                        <h5 data-aos="fade-up">{{saran.nama}}</h5>
+                        <p>{{ saran.tanggal }}</p>
+                        <br>
+                        <div class="d-flex align-items-center justify-content-between">
+                          <p class="description"><a href="/adminSaran/{{ saran._id }}" class="btn-primary">Lihat</a></p>
+                          <div class="d-flex">
                             <form method="post" action="/hapusSaran/{{ saran._id }}">
                                 <input type="hidden" name="_method" value="DELETE">
                                 <button type="submit" class="btn btn-sm btn-primary btn-circle" style="background-color:rgb(182, 110, 110);border:none">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
+                          </div>
                         </div>
+                      </div>
+                      <div class="col-lg-4">
+                        <div class="thumb" style="border:2px solid #dcdcdc">
+                          <img class="thumbimg" src="../../static/img/saran/{{saran.gambar}}" alt="" style="width: 100%;">
+                        </div>
+                      </div>
                     </div>
+                  </div>
                 </div>
+                
+              </div>
             </div>
-            {% endfor %}
-        </div>
+            {%endfor%}
+          </div>
     </div>
-</div>
+
 
 
     <script>

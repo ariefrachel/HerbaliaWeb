@@ -1,12 +1,32 @@
 {% include 'include.html' %}
 {% include 'admin/components/navbar.html' %}
-    <h1>{{ artikel.judul }}</h1>
-    <div class="artikelKonten">
-        <p>{{ artikel.isi }}</p>
-    </div>
-    <a href="/adminArtikel/edit/{{ artikel._id }}">Edit</a>
-    <form method="post" action="/adminArtikel/delete/{{ artikel._id }}" style="display: inline;">
-        <input type="hidden" name="_method" value="DELETE">
-        <button type="submit">Hapus</button>
-    </form>
-    <a href="/adminArtikel">Kembali ke Daftar Artikel</a>
+<div class="container mt-5" >
+    <div class="row">
+        <div class="col-2">
+
+        </div>
+        <div class="col-8">
+            <div class="card mb-4 shadow-sm border-0" style="border-radius: 1rem;">
+                <div class="card-body">
+                    <div class="row mt-3">
+                        <div style="padding:1rem 2rem 2rem 2rem">
+                            <img class="card-img-top mb-4" style="width:100%;height: 300px;border-radius:18px;" src="../static/img/artikel/{{ artikel.path }}" class="herb-img img-fluid" alt="">
+                            <h3>{{ artikel.judul }}</h3><br>
+                            {% for paragraph in artikel.isi %}
+                                {% for line in paragraph.split('\n') %}
+                                    {% if line.strip() != '' %}
+                                        <p style="margin-top:1rem">{{ line }}</p>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-2">
+            
+        </div>
+    </div> 
+</div>
+

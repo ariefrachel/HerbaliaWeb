@@ -80,6 +80,7 @@ except:
 
 
 
+
 #------------------------------------UPLOAD------------------------------------#
 
 target_names = [
@@ -87,6 +88,8 @@ target_names = [
     'Daun Mint', 'Daun Pepaya', 'Daun Sirih', 'Daun Sirsak',
     'Lidah Buaya', 'Teh Hijau'
 ]
+
+
 
 model = load_model('modelnlp/model.h5')
 
@@ -334,11 +337,31 @@ from bert import bert_prediction, random_question
 
 #------------------------------------ADMIN------------------------------------#
 
+#------------------------------------LOGIN------------------------------------#
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        admin = db.admin.find_one({'username': username, 'password': password})
+        if admin:
+            session['username'] = admin['username']
+            return redirect('/admin')
+        else:
+            return render_template('admin/login/login.html', error=True)
+    return render_template('admin/login/login.html', error=False)
+
+
+
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 @app.route('/admin', methods=['GET'])
 def admin():
-    return render_template('admin/admin.html')
+    if 'username' in session:
+        return render_template('admin/admin.html', username=session['username'])
+    else:
+        return redirect('/login')
 
 #------------------------------------ADMIN PROFIL------------------------------------#
 
@@ -346,8 +369,11 @@ APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 @app.route('/profil', methods=['GET'])
 def profil():
-    profils = db['profil'].find({})
-    return render_template('admin/profil/profil.html', profils=profils)
+    if 'username' in session:
+        profils = db['profil'].find({})
+        return render_template('admin/profil/profil.html', profils=profils)
+    else:
+        return redirect('/login')
 
 @app.route('/editProfil/<id>', methods=['GET', 'POST'])
 def editProfil(id):
@@ -371,6 +397,22 @@ def editProfil(id):
 def adminTanaman():
     tanaman = db['tanamanHerbal'].find({})
     return render_template("admin/daftarTanaman/adminTanaman.html",tanaman  = tanaman)
+
+@app.route('/adminTanaman/editDeskripsi/<id>', methods=['GET', 'POST'])
+def editDeskripsi(id):
+    data = db.tanamanHerbal.find_one({'_id': ObjectId(id)})
+    if not data:
+        return 'Data tidak ditemukan'
+
+    if request.method == 'POST':
+        deskripsiBaru = request.form['deskripsi']
+        db.tanamanHerbal.update_one(
+            {'_id': ObjectId(id)},
+            {'$set': {'deskripsi': deskripsiBaru}}
+        )
+        return redirect('/adminTanaman?success=true')
+
+    return render_template("admin/daftarTanaman/edit/editDeskripsi.html", editTanaman=data)
 
 @app.route('/adminTanaman/search')
 def cariAdminTanaman():
@@ -474,6 +516,14 @@ def hapus_tanaman(tanaman_id):
 def adminSaran():
     adminSaran = db['saran'].find({})
     return render_template("admin/saran/saran.html",adminSaran  = adminSaran)
+
+@app.route('/adminSaran/<saran_id>')
+def detailSaran(saran_id):
+    saran = db['saran'].find_one({'_id': ObjectId(saran_id)})
+    if saran:
+        return render_template('admin/saran/detailSaran.html', saran=saran)
+    else:
+        return 'Artikel tidak ditemukan'
 
 def filter_saran_by_tanggal(saran, tanggal_filter):
     filtered_saran = []
@@ -611,7 +661,9 @@ def edit_article(artikel_id):
         else:
             filename = article['image']
 
-        db['artikel'].update_one({'_id': ObjectId(artikel_id)}, {'$set': {'judul': judul, 'isi': cleaned_content, 'path': filename}})
+        paragraphs = cleaned_content.split('\n\n')
+
+        db['artikel'].update_one({'_id': ObjectId(artikel_id)}, {'$set': {'judul': judul, 'isi': paragraphs, 'path': filename}})
         return redirect('/adminArtikel/' + artikel_id)
     else:
         return render_template('admin/artikel/editArtikel.html', artikel=artikel)
@@ -691,4 +743,4 @@ def hapusFaq(faq_id):
 
 
 if __name__ == "__main__":
-    app.run(port=8000, debug=True)
+    app.run(debug=True)

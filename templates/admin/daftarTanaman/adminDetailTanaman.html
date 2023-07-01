@@ -36,7 +36,14 @@
                     </div>
                     <div class="col-1"></div>
                     <div class="col-8">
-                        <h5>Deskripsi</h5>
+                        <div class="flex">
+                          <h5>Deskripsi</h5>
+                          <a href="/adminTanaman/editDeskripsi/{{ detailTanaman._id }}" >
+                            <button type="submit" class="btn btn-sm btn-primary btn-circle" style="background-color:rgb(236, 182, 66);border:none">
+                              <i class="fas fa-edit"></i>
+                            </button>
+                          </a>
+                        </div>
                         <p>{{ detailTanaman.deskripsi }}</p>
                         <br>
                         <h5>Khasiat</h5>

@@ -1,24 +1,25 @@
-<!DOCTYPE html>
-<html>
-<head>
+
     <title>Tambah Artikel</title>
     <script src="https://cdn.ckeditor.com/ckeditor5/32.0.0/classic/ckeditor.js"></script>
-</head>
-<body>
+
+    {% include 'include.html' %}
     {% include 'admin/components/navbar.html' %}
-    <h1>Tambah Artikel</h1>
-    <form action="/adminArtikel/new" method="POST" enctype="multipart/form-data">
-        <label for="judul">Judul:</label>
-        <input type="text" name="judul" id="judul" required>
-        <br><br>
-        <label for="isi">Isi:</label>
-        <textarea name="isi" id="editor" ></textarea>
-        <br><br>
-        <label for="path">Gambar:</label>
-        <input type="file" name="path" id="path" accept="image/*">
-        <br><br>
-        <input type="submit" value="Tambah Data">
-    </form>
+    <div class="container mt-3">
+        <h1>Tambah Artikel</h1>
+        <form action="/adminArtikel/new" method="POST" enctype="multipart/form-data">
+            <label for="judul">Judul:</label>
+            <input class="form-control" type="text" name="judul" id="judul" required>
+            <br>
+            <label for="isi">Isi:</label>
+            <textarea class="form-control" name="isi" id="editor" ></textarea>
+            <br>
+            <label for="path">Gambar:</label>
+            <input class="form-control" type="file" name="path" id="path" accept="image/*">
+            <br><br><br>
+            <input type="submit" value="Tambah Data" class="btn btn-primary">
+        </form>
+    </div>
+
     <script>
         ClassicEditor
             .create(document.querySelector('#editor'), {
@@ -74,5 +75,3 @@
                 console.error('Terjadi kesalahan saat menginisialisasi editor', error);
             });
     </script>
-</body>
-</html>

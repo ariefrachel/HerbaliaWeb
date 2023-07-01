@@ -1,26 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Profil</title>
-    <!-- Masukkan tautan ke CSS SweetAlert -->
+{% include 'include.html' %}
+
+{% include 'admin/components/navbar.html' %}
+
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10">
-</head>
-<body>
-    <div class="container">
-        <h1>Edit Profil</h1>
-        <!-- Form edit profil -->
+
+
+    <div class="container mt-5">
+        <h1>Edit Profil</h1><br>
         <form method="post" action="/editProfil/{{ profil._id }}">
-            <!-- Form fields di sini -->
+
             <div class="form-group">
                 <label for="profil">Profil:</label>
-                <textarea class="form-control" id="profil" name="profil" required>{{ profil.profil }}</textarea>
+                <textarea style="height:300px" class="form-control" id="profil" name="profil" required>{{ profil.profil }}</textarea>
             </div>
 
-            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+            <button type="submit" class="btn btn-primary mt-5">Simpan Perubahan</button>
         </form>
     </div>
-
-    <!-- Masukkan tautan ke JavaScript SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script>
         // Jika parameter "success" ada dalam URL, tampilkan SweetAlert
@@ -32,10 +29,8 @@
                 title: 'Profil berhasil diubah',
                 confirmButtonText: 'OK'
             }).then(() => {
-                // Hapus parameter "success" dari URL agar SweetAlert tidak ditampilkan lagi saat halaman diperbarui
                 window.history.replaceState({}, document.title, window.location.pathname);
             });
         }
     </script>
-</body>
-</html>
+

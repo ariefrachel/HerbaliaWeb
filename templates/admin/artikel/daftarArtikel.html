@@ -17,7 +17,52 @@
         </div>
 
         <br><hr><br>
-      <div class="row gy-4">
+        <div class="container">
+          <div class="row">
+            {% for artikel in artikel %}
+            <div class="col-lg-6" data-aos="fade-up">
+              <div class="row">
+
+                <div class="col-12">
+                  <div class="landingarticles">
+                    <div class="row">
+                      <div class="col-lg-8">
+                        <h5 data-aos="fade-up">{{artikel.judul}}</h5>
+                        <br>
+                        <div class="d-flex align-items-center justify-content-between">
+                          <p class="description"><a href="/adminArtikel/{{ artikel._id }}" class="btn-primary">Lihat</a></p>
+                          <div class="d-flex">
+
+                            <a href="/adminArtikel/edit/{{ artikel._id }}" class="me-2">
+                              <button type="submit" class="btn btn-sm btn-primary btn-circle" style="background-color:rgb(236, 182, 66);border:none">
+                                <i class="fas fa-edit"></i>
+                              </button>
+                            </a>
+                            <form method="post" action="/adminArtikel/delete/{{ artikel._id }}">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="btn btn-sm btn-primary btn-circle" style="background-color:rgb(182, 110, 110);border:none">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-4">
+                        <div class="thumb">
+                          <img class="thumbimg" src="../../static/img/artikel/{{artikel.path}}" alt="" style="width: 150%;">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+            {%endfor%}
+          </div>
+    </div>
+  
+      <!-- <div class="row gy-4">
         <div class="col-lg-12 d-flex align-items-center">
           <div class="row gy-4">
             {% for artikel in artikel %}
@@ -52,7 +97,7 @@
           </div>
         </div>
 
-      </div>
+      </div> -->
 
     </div>
   </section>

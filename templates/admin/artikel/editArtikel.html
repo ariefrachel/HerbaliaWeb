@@ -1,40 +1,81 @@
+
+<title>Edit Artikel</title>
+<script src="https://cdn.ckeditor.com/ckeditor5/32.0.0/classic/ckeditor.js"></script>
+
 {% include 'include.html' %}
 {% include 'admin/components/navbar.html' %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Artikel</title>
-    <script src="https://cdn.tiny.cloud/1/<YOUR_API_KEY>/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
-    <script>
-        tinymce.init({
-            selector: 'textarea',
-            height: 300,
-            plugins: [
-                'advlist autolink lists link image charmap print preview anchor',
-                'searchreplace visualblocks code fullscreen',
-                'insertdatetime media table paste code help wordcount'
-            ],
-            toolbar: 'undo redo | formatselect | bold italic backcolor | \
-                alignleft aligncenter alignright alignjustify | \
-                bullist numlist outdent indent | removeformat | help'
-        });
-    </script>
-</head>
-<body>
-    <div class="container">
-        <h1>Edit Artikel</h1>
-    <!-- edit_article.html -->
-        <form method="post" action="/adminArtikel/edit/{{ artikel._id }}" enctype="multipart/form-data">
-            <label for="title">Judul:</label><br>
-            <input type="text" id="title" name="judul" value="{{ artikel.judul }}"><br><br>
-            <label for="content">Konten:</label><br>
-            <textarea id="content" name="isi" rows="4" cols="50">{{ artikel.isi }}</textarea><br><br>
-            <label for="image">Gambar:</label><br>
-            <input type="file" id="image" name="path"><br><br>
-            <input type="submit" value="Simpan">
-        </form>
 
-        <a href="/adminArtikel">Kembali ke Daftar Artikel</a>
-    </div>
-</body>
-</html>
+<div class="container mt-3">
+    <h1>Edit Artikel</h1>
+    <form action="/adminArtikel/edit/{{ artikel._id }}" method="POST" enctype="multipart/form-data">
+        <label for="judul">Judul:</label>
+        <input class="form-control" type="text" name="judul" id="judul" value="{{ artikel.judul }}" required>
+        <br>
+        <label for="isi">Isi:</label>
+        <textarea class="form-control" name="isi" id="editor" >{{ artikel.isi }}</textarea>
+        <br>
+        <label for="path">Gambar:</label>
+        <input class="form-control" type="file" name="path" id="path" accept="image/*">
+        <br><br><br>
+        <input type="submit" value="Tambah Data" class="btn btn-primary">
+    </form>
+</div>
+
+<script>
+    ClassicEditor
+        .create(document.querySelector('#editor'), {
+            toolbar: {
+                items: [
+                    'heading',
+                    '|',
+                    'bold',
+                    'italic',
+                    'underline',
+                    'link',
+                    '|',
+                    'bulletedList',
+                    'numberedList',
+                    '|',
+                    'indent',
+                    'outdent',
+                    '|',
+                    'undo',
+                    'redo'
+                ]
+            },
+            language: 'en',
+            indentBlock: {
+                offset: 1, // Jumlah spasi indentasi
+                unit: 'em' // Satuan indentasi (misalnya px, em)
+            },
+            image: {
+                toolbar: ['imageTextAlternative', '|', 'imageStyle:alignLeft', 'imageStyle:full', 'imageStyle:alignRight'],
+                styles: [
+                    'full',
+                    'alignLeft',
+                    'alignRight'
+                ]
+            },
+            table: {
+                contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells']
+            },
+            licenseKey: '',
+            typing: {
+                // Menambahkan jarak paragraf saat menekan Enter
+                insertBreak: {
+                    breakType: 'paragraph',
+                    shiftEnter: false,
+                    indentClass: 'ck-indent',
+                }
+            }
+        })
+        .then(editor => {
+            console.log('Editor berhasil diinisialisasi', editor);
+        })
+        .catch(error => {
+            console.error('Terjadi kesalahan saat menginisialisasi editor', error);
+        });
+</script>
+
+
+
