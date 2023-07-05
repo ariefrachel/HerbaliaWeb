@@ -17,10 +17,9 @@
   </div>
 </div>
 
-<!-- Masukkan tautan ke JavaScript SweetAlert -->
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
-  // Jika ada parameter "success" pada URL, tampilkan SweetAlert
   const urlParams = new URLSearchParams(window.location.search);
   const successMessage = urlParams.get('success');
   if (successMessage === 'true') {
@@ -29,7 +28,6 @@
           title: 'Profil berhasil diubah',
           confirmButtonText: 'OK'
       }).then(() => {
-          // Hapus parameter "success" dari URL agar SweetAlert tidak ditampilkan lagi saat halaman diperbarui
           window.history.replaceState({}, document.title, window.location.pathname);
       });
   }

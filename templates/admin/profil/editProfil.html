@@ -20,7 +20,6 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script>
-        // Jika parameter "success" ada dalam URL, tampilkan SweetAlert
         const urlParams = new URLSearchParams(window.location.search);
         const successMessage = urlParams.get('success');
         if (successMessage === 'true') {

@@ -23,7 +23,6 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.utils import get_file
 
-import cv2
 from PIL import Image
 
 import bleach
@@ -39,10 +38,9 @@ from time import time
 import time
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restful import Resource, Api
-# from flask_mysqldb import MySQL
 from flask_httpauth import HTTPTokenAuth
 from flask_cors import CORS
-
+from datetime import timedelta
 
 
 
@@ -53,7 +51,9 @@ api = Api(app)
 
 app.config['UPLOAD_TANAMAN'] = 'static/img/list/'
 app.config['UPLOAD_FITUR'] = 'static/img/feature/'
-app.config['UPLOAD_ARTIKEL'] = 'static/img/artikel/' 
+app.config['UPLOAD_ARTIKEL'] = 'static/img/artikel/'
+app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=120)
+
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 UPLOAD_DIR = 'static/img/riwayat/'
 
@@ -206,8 +206,6 @@ def tambah_saran():
     }
 
 
-
-
 #------------------------------------LANDING PAGE------------------------------------#
 
 @app.route('/', methods=['GET'])
@@ -221,8 +219,6 @@ def index():
 @app.route('/chat', methods=['GET'])
 def chat():
     return render_template('chat.html')
-
-
 
 
 #------------------------------------DAFTAR TANAMAN------------------------------------#
@@ -341,6 +337,7 @@ from bert import bert_prediction, random_question
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    session.permanent = True
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -352,6 +349,10 @@ def login():
             return render_template('admin/login/login.html', error=True)
     return render_template('admin/login/login.html', error=False)
 
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect('/admin')
 
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -395,24 +396,92 @@ def editProfil(id):
 
 @app.route('/adminTanaman')
 def adminTanaman():
-    tanaman = db['tanamanHerbal'].find({})
-    return render_template("admin/daftarTanaman/adminTanaman.html",tanaman  = tanaman)
+    if 'username' in session:
+        tanaman = db['tanamanHerbal'].find({})
+        return render_template("admin/daftarTanaman/adminTanaman.html",tanaman  = tanaman)
+    else:
+        return redirect('/login')
 
-@app.route('/adminTanaman/editDeskripsi/<id>', methods=['GET', 'POST'])
-def editDeskripsi(id):
-    data = db.tanamanHerbal.find_one({'_id': ObjectId(id)})
+@app.route('/adminTanaman/editDeskripsi/<tanaman_id>', methods=['GET', 'POST'])
+def editDeskripsi(tanaman_id):
+    data = db.tanamanHerbal.find_one({'_id': ObjectId(tanaman_id)})
     if not data:
         return 'Data tidak ditemukan'
 
     if request.method == 'POST':
         deskripsiBaru = request.form['deskripsi']
         db.tanamanHerbal.update_one(
-            {'_id': ObjectId(id)},
+            {'_id': ObjectId(tanaman_id)},
             {'$set': {'deskripsi': deskripsiBaru}}
         )
-        return redirect('/adminTanaman?success=true')
+        return redirect(url_for('editDeskripsi', tanaman_id=tanaman_id))
 
     return render_template("admin/daftarTanaman/edit/editDeskripsi.html", editTanaman=data)
+
+
+@app.route('/adminTanaman/editKhasiat/<tanaman_id>', methods=['GET', 'POST'])
+def edit_khasiat(tanaman_id):
+    detailTanaman = db['tanamanHerbal'].find_one({'_id': ObjectId(tanaman_id)})
+    dataTanaman = db['tanamanHerbal'].find()
+
+    khasiat_list = []
+
+    khasiat_id = detailTanaman.get("khasiat")
+
+    if khasiat_id:
+        khasiat = db["khasiat"].find_one({"_id": khasiat_id})
+        if khasiat:
+            khasiat_list = khasiat["khasiat"]
+
+    if request.method == 'POST':
+        khasiat = request.form.getlist('khasiat[]')
+
+        db["khasiat"].update_one(
+            {"_id": khasiat_id},
+            {"$pull": {"khasiat": {"$nin": khasiat}}}
+        )
+
+        db["khasiat"].update_one(
+            {"_id": khasiat_id},
+            {"$addToSet": {"khasiat": {"$each": khasiat}}}
+        )
+
+
+        return redirect(url_for('edit_khasiat', tanaman_id=tanaman_id))
+
+    return render_template('admin/daftarTanaman/edit/editKhasiat.html', detailTanaman=detailTanaman, tanaman=dataTanaman, khasiatList=khasiat_list)
+
+@app.route('/adminTanaman/editReferensi/<tanaman_id>', methods=['GET', 'POST'])
+def edit_referensi(tanaman_id):
+    detailTanaman = db['tanamanHerbal'].find_one({'_id': ObjectId(tanaman_id)})
+    dataTanaman = db['tanamanHerbal'].find()
+
+    referensi_list = []
+
+    referensi_id = detailTanaman.get("referensi")
+
+    if referensi_id:
+        referensi = db["referensi"].find_one({"_id": referensi_id})
+        if referensi:
+            referensi_list = referensi["referensi"]
+
+    if request.method == 'POST':
+        referensi = request.form.getlist('referensi[]')
+
+        db["referensi"].update_one(
+            {"_id": referensi_id},
+            {"$pull": {"referensi": {"$nin": referensi}}}
+        )
+
+        db["referensi"].update_one(
+            {"_id": referensi_id},
+            {"$addToSet": {"referensi": {"$each": referensi}}}
+        )
+
+
+        return redirect(url_for('edit_referensi', tanaman_id=tanaman_id))
+
+    return render_template('admin/daftarTanaman/edit/editReferensi.html', detailTanaman=detailTanaman, tanaman=dataTanaman, referensiList=referensi_list)
 
 @app.route('/adminTanaman/search')
 def cariAdminTanaman():
@@ -445,7 +514,7 @@ def detailAdminTanaman(daftarTanaman_id):
         referensi = db["referensi"].find_one({"_id": referensi_id})
         if referensi:
             referensi_list = referensi["referensi"]
-
+    
     if detailTanaman:
         return render_template('admin/daftarTanaman/adminDetailTanaman.html', detailTanaman=detailTanaman, tanaman=dataTanaman, khasiatList=khasiat_list, referensiList=referensi_list)
     else:
@@ -453,51 +522,54 @@ def detailAdminTanaman(daftarTanaman_id):
 
 @app.route('/tambah_tanaman', methods=['GET', 'POST'])
 def tambah_tanaman():
-    if request.method == 'POST':
-        nama = request.form['nama']
-        nama_ilmiah = request.form['nama_ilmiah']
-        deskripsi = request.form['deskripsi']
-        khasiat = request.form.getlist('khasiat[]')
-        referensi = request.form.getlist('referensi[]')
-        file = request.files['gambar']
+    if 'username' in session:
+        if request.method == 'POST':
+            nama = request.form['nama']
+            nama_ilmiah = request.form['nama_ilmiah']
+            deskripsi = request.form['deskripsi']
+            khasiat = request.form.getlist('khasiat[]')
+            referensi = request.form.getlist('referensi[]')
+            file = request.files['gambar']
 
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_TANAMAN'], filename))
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_TANAMAN'], filename))
 
-        khasiat_data = {
-            'tanaman_id': None,
-            'khasiat': khasiat
-        }
-        referensi_data = {
-            'tanaman_id': None,
-            'referensi': referensi
-        }
-        khasiat_id = db['khasiat'].insert_one(khasiat_data).inserted_id
-        referensi_id = db['referensi'].insert_one(referensi_data).inserted_id
+            khasiat_data = {
+                'tanaman_id': None,
+                'khasiat': khasiat
+            }
+            referensi_data = {
+                'tanaman_id': None,
+                'referensi': referensi
+            }
+            khasiat_id = db['khasiat'].insert_one(khasiat_data).inserted_id
+            referensi_id = db['referensi'].insert_one(referensi_data).inserted_id
 
-        tanaman_herbal = {
-            'path': filename,
-            'nama': nama,
-            'namailmiah': nama_ilmiah,
-            'deskripsi': deskripsi,
-            'khasiat': khasiat_id,
-            'referensi': referensi_id
-        }
-        tanaman_id = db['tanamanHerbal'].insert_one(tanaman_herbal).inserted_id
+            tanaman_herbal = {
+                'path': filename,
+                'nama': nama,
+                'namailmiah': nama_ilmiah,
+                'deskripsi': deskripsi,
+                'khasiat': khasiat_id,
+                'referensi': referensi_id
+            }
+            tanaman_id = db['tanamanHerbal'].insert_one(tanaman_herbal).inserted_id
 
-        db['khasiat'].update_one(
-            {'_id': khasiat_id},
-            {'$set': {'tanaman_id': tanaman_id}}
-        )
+            db['khasiat'].update_one(
+                {'_id': khasiat_id},
+                {'$set': {'tanaman_id': tanaman_id}}
+            )
 
-        db['referensi'].update_one(
-            {'_id': referensi_id},
-            {'$set': {'tanaman_id': tanaman_id}}
-        )
+            db['referensi'].update_one(
+                {'_id': referensi_id},
+                {'$set': {'tanaman_id': tanaman_id}}
+            )
 
-        return render_template('admin/daftarTanaman/adminTanaman.html')
+            return render_template('admin/daftarTanaman/adminTanaman.html')
 
-    return render_template('admin/daftarTanaman/tambahTanaman.html')
+        return render_template('admin/daftarTanaman/tambahTanaman.html')
+    else:
+        return redirect('/login')
 
 @app.route('/hapus_tanaman/<tanaman_id>', methods=['POST'])
 def hapus_tanaman(tanaman_id):
@@ -514,8 +586,11 @@ def hapus_tanaman(tanaman_id):
 
 @app.route('/adminSaran')
 def adminSaran():
-    adminSaran = db['saran'].find({})
-    return render_template("admin/saran/saran.html",adminSaran  = adminSaran)
+    if 'username' in session:
+        adminSaran = db['saran'].find({})
+        return render_template("admin/saran/saran.html",adminSaran  = adminSaran)
+    else:
+        return redirect('/login')
 
 @app.route('/adminSaran/<saran_id>')
 def detailSaran(saran_id):
@@ -546,21 +621,24 @@ def hapusSaran(saran_id):
 
 @app.route('/adminFitur/upload', methods=['POST','GET'])
 def uploadFitur():
-    target = os.path.join(APP_ROOT, 'static/img/feature/')  #folder path
-    if not os.path.isdir(target):
-            os.mkdir(target)
-    if request.method == 'POST':
-        data = {}
-        data['path'] = request.files["path"]
-        data['caption'] = request.form['caption']
+    if 'username' in session:
+        target = os.path.join(APP_ROOT, 'static/img/feature/')  #folder path
+        if not os.path.isdir(target):
+                os.mkdir(target)
+        if request.method == 'POST':
+            data = {}
+            data['path'] = request.files["path"]
+            data['caption'] = request.form['caption']
 
-        for upload in request.files.getlist("path"):
-            filename = secure_filename(upload.filename)
-            destination = "/".join([target, filename])
-            upload.save(destination)
-            db.landingpage_feature.insert_one({'path': filename, 'caption': data['caption']})
+            for upload in request.files.getlist("path"):
+                filename = secure_filename(upload.filename)
+                destination = "/".join([target, filename])
+                upload.save(destination)
+                db.landingpage_feature.insert_one({'path': filename, 'caption': data['caption']})
 
-        return 'Upload Successfully'
+            return 'Upload Successfully'
+    else:
+        return redirect('/login')
 
 @app.route('/editFitur/<id>', methods=['GET', 'POST'])
 def edit_data(id):
@@ -600,15 +678,21 @@ def delete_data(id):
 
 @app.route('/adminFitur/')
 def adminFitur():
-    dataFiturWeb = db['landingpage_feature'].find({})
-    return render_template("admin/adminFitur.html",fitur_list  = dataFiturWeb)
+    if 'username' in session:
+        dataFiturWeb = db['landingpage_feature'].find({})
+        return render_template("admin/adminFitur.html",fitur_list  = dataFiturWeb)
+    else:
+        return redirect('/login')
 
 #------------------------------------ADMIN ARTIKEL------------------------------------#
 
 @app.route('/adminArtikel')
 def adminArtikel():
-    artikel = db['artikel'].find()
-    return render_template('admin/artikel/daftarArtikel.html', artikel=artikel)
+    if 'username' in session:
+        artikel = db['artikel'].find()
+        return render_template('admin/artikel/daftarArtikel.html', artikel=artikel)
+    else:
+        return redirect('/login')
 
 @app.route('/adminArtikel/<artikel_id>')
 def detailAdminArtikel(artikel_id):
@@ -621,30 +705,32 @@ def detailAdminArtikel(artikel_id):
 
 @app.route('/adminArtikel/new', methods=['GET', 'POST'])
 def tambahArtikel():
-    if request.method == 'POST':
-        judul = request.form['judul']
-        isi = request.form['isi']
-        image = request.files['path']
-        cleaned_content = bleach.clean(isi, tags=[], strip=True)
+    if 'username' in session:
+        if request.method == 'POST':
+            judul = request.form['judul']
+            isi = request.form['isi']
+            image = request.files['path']
+            cleaned_content = bleach.clean(isi, tags=[], strip=True)
 
-        if image and allowed_file(image.filename):
-            filename = secure_filename(image.filename)
-            image.save(os.path.join(app.config['UPLOAD_ARTIKEL'], filename))
+            if image and allowed_file(image.filename):
+                filename = secure_filename(image.filename)
+                image.save(os.path.join(app.config['UPLOAD_ARTIKEL'], filename))
+            else:
+                filename = None
+
+            paragraphs = cleaned_content.split('\n\n')
+
+            article = {
+                'judul': judul,
+                'isi': paragraphs,
+                'path': filename
+            }
+            db['artikel'].insert_one(article)
+            return redirect('/adminArtikel')
         else:
-            filename = None
-
-        # Memisahkan isi artikel menjadi paragraf
-        paragraphs = cleaned_content.split('\n\n')
-
-        article = {
-            'judul': judul,
-            'isi': paragraphs,
-            'path': filename
-        }
-        db['artikel'].insert_one(article)
-        return redirect('/adminArtikel')
+            return render_template('admin/artikel/tambahArtikel.html')
     else:
-        return render_template('admin/artikel/tambahArtikel.html')
+        return redirect('/login')
 
 @app.route('/adminArtikel/edit/<artikel_id>', methods=['GET', 'POST'])
 def edit_article(artikel_id):
@@ -694,44 +780,56 @@ def filter_riwayat_by_tanggal(riwayat, tanggal_filter):
 
 @app.route('/riwayat', methods=['GET'])
 def riwayat():
-    tanggal = request.args.get('tanggal')
-    akurasi = request.args.get('akurasi')
-    riwayat = db['riwayat'].find({})
-
-    if tanggal:
-        riwayat = db['riwayat'].find({'tanggal': tanggal})
-    elif akurasi == 'high':
-        riwayat = db['riwayat'].find({'akurasi': {'$gte': 75, '$lte': 100}})
-    elif akurasi == 'low':
-        riwayat = db['riwayat'].find({'akurasi': {'$lt': 75}})
-    elif akurasi == 'all':
+    if 'username' in session:
+        tanggal = request.args.get('tanggal')
+        akurasi = request.args.get('akurasi')
         riwayat = db['riwayat'].find({})
 
-    return render_template('admin/riwayat/riwayat.html', riwayat=riwayat)
+        if tanggal:
+            riwayat = db['riwayat'].find({'tanggal': tanggal})
+        elif akurasi == 'high':
+            riwayat = db['riwayat'].find({'akurasi': {'$gte': 75, '$lte': 100}})
+        elif akurasi == 'low':
+            riwayat = db['riwayat'].find({'akurasi': {'$lt': 75}})
+        elif akurasi == 'all':
+            riwayat = db['riwayat'].find({})
+
+        return render_template('admin/riwayat/riwayat.html', riwayat=riwayat)
+    else:
+        return redirect('/login')
 
 #------------------------------------ADMIN FAQ------------------------------------#
 
 @app.route('/adminFaq', methods=['GET'])
 def adminFaq():
-    faqData = db['faq'].find({})
-    return render_template('admin/faq/faq.html',faqData = faqData)
+    if 'username' in session:
+        faqData = db['faq'].find({})
+        return render_template('admin/faq/faq.html',faqData = faqData)
+    else:
+        return redirect('/login')
 
 @app.route('/adminFaq/new', methods=['GET', 'POST'])
 def tambahFaqData():
-    if request.method == 'POST':
-        pertanyaan = request.form['pertanyaan']
-        jawaban = request.form['jawaban']
+    if 'username' in session:
+        if request.method == 'POST':
+            pertanyaan = request.form['pertanyaan']
+            jawaban = request.form['jawaban']
 
-        faq = {
-            'pertanyaan': pertanyaan,
-            'jawaban': jawaban,
-        }
-        db['faq'].insert_one(faq)
-        return redirect('/adminFaq')
+            faq = {
+                'pertanyaan': pertanyaan,
+                'jawaban': jawaban,
+            }
+            db['faq'].insert_one(faq)
+            return redirect('/adminFaq')
+    else:
+        return redirect('/login')
 
 @app.route('/tambahFaq', methods=['GET'])
 def tambahFaq():
-    return render_template('admin/faq/tambahFaq.html')
+    if 'username' in session:
+        return render_template('admin/faq/tambahFaq.html')
+    else:
+        return redirect('/login')
 
 @app.route('/hapusFaq/<faq_id>', methods=['POST'])
 def hapusFaq(faq_id):

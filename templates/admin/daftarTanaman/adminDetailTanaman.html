@@ -47,6 +47,11 @@
                         <p>{{ detailTanaman.deskripsi }}</p>
                         <br>
                         <h5>Khasiat</h5>
+                        <a href="/adminTanaman/editKhasiat/{{ detailTanaman._id }}" >
+                          <button type="submit" class="btn btn-sm btn-primary btn-circle" style="background-color:rgb(236, 182, 66);border:none">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                        </a>
                         <ul>
                             {% for khasiat in khasiatList %}
                             <li>{{ khasiat }}</li>
@@ -54,6 +59,11 @@
                         </ul>
                         <br>
                         <h5>Referensi</h5>
+                        <a href="/adminTanaman/editReferensi/{{ detailTanaman._id }}" >
+                          <button type="submit" class="btn btn-sm btn-primary btn-circle" style="background-color:rgb(236, 182, 66);border:none">
+                            <i class="fas fa-edit"></i>
+                          </button>
+                        </a>
                         <div class="owl-carousel owl-theme">
                             {% for referensi in referensiList %}
                             <div class="item">

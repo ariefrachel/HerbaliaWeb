@@ -1,0 +1,59 @@
+
+{% include 'include.html' %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Referensi</title>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#edit_referensi").click(function() {
+                var input = '<div class="input-group mb-2">' +
+                                '<input class="form-control" type="text" name="referensi[]" required>' +
+                                '<div class="input-group-append">' +
+                                    '<button class="btn btn-danger remove-referensi-btn" type="button">&times;</button>' +
+                                '</div>' +
+                            '</div>';
+                $("#input_referensi").append(input);
+            });
+
+            $("#input_referensi").on('click', '.remove-referensi-btn', function() {
+                $(this).closest('.input-group').remove();
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-5">Edit Referensi</h2>
+        <form method="POST" enctype="multipart/form-data" action="/adminTanaman/editReferensi/{{ detailTanaman._id }}">
+            <label for="referensi">Referensi:</label>
+            <div class="row">
+                <div class="col-9" id="input_referensi">
+                    {% for referensi in referensiList %}
+                    <div class="input-group mb-2">
+                        <input class="form-control" type="text" name="referensi[]" value="{{ referensi }}" required>
+                        <div class="input-group-append">
+                            <button class="btn btn-danger remove-referensi-btn" type="button">&times;</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                </div>
+                <div class="col-3">
+                    <button class="btn btn-secondary" type="button" id="edit_referensi">+ Tambah</button>
+                </div>
+                <div class="col-12">
+                    <div class="d-flex">
+                        <input class="btn btn-primary mt-4" style="border:none" type="submit" value="Simpan Referensi">
+                        <a href="/adminTanaman/{{ detailTanaman._id }}"><input class="btn btn-secondary mt-4 ms-4" style="border:none" value="Kembali"></a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+
+
+</html>
