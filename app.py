@@ -311,20 +311,6 @@ def cariArtikel():
 
 #------------------------------------CHATBOT------------------------------------#
 
-class apipredict(Resource):
-    def get(self):
-        question = request.args.get('pertanyaan')
-        print(question)
-        prediction = bert_prediction(str(question))
-        print(prediction)
-        return prediction
-
-#routes
-api.add_resource(apipredict, '/api/v1/model/predict', methods=['GET'])
-
-CORS(app)
-
-from bert import bert_prediction, random_question
 
 
 
