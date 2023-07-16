@@ -21,6 +21,4 @@ python-dotenv
 scikit-learn
 scipy
 selenium
-tensorflow
-tflearn
 virtualenv
