@@ -103,7 +103,8 @@ app.secret_key = 'MySecret'
 
 #------------------------------------DATABASE------------------------------------#
 try:
-    mongo = mongodb+srv://herby:tuing123@cluster0.62pvn1z.mongodb.net/?retryWrites=true&w=majority
+    CONNECTION_STRING = "mongodb+srv://herby:tuing123@cluster0.62pvn1z.mongodb.net/?retryWrites=true&w=majority"
+    mongo = pymongo.MongoClient(CONNECTION_STRING)
 except:
     print("ERROR Connect To Database")
 
