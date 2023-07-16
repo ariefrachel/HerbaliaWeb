@@ -1,4 +1,5 @@
-﻿Flask
+bleach
+Flask
 Flask-Cors
 Flask-HTTPAuth
 Flask-JWT-Extended
