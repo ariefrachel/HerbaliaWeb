@@ -103,13 +103,7 @@ app.secret_key = 'MySecret'
 
 #------------------------------------DATABASE------------------------------------#
 try:
-    mongo = pymongo.MongoClient(
-        host="localhost",
-        port=27017,
-        serverSelectionTimeoutMS=1000
-    )
-    db = mongo.herbalia
-    mongo.server_info()
+    mongo = mongodb+srv://herby:tuing123@cluster0.62pvn1z.mongodb.net/?retryWrites=true&w=majority
 except:
     print("ERROR Connect To Database")
 
