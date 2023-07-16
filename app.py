@@ -105,6 +105,8 @@ app.secret_key = 'MySecret'
 try:
     CONNECTION_STRING = "mongodb+srv://herby:tuing123@cluster0.62pvn1z.mongodb.net/?retryWrites=true&w=majority"
     mongo = pymongo.MongoClient(CONNECTION_STRING)
+    db = mongo.herbalia
+    mongo.server_info()
 except:
     print("ERROR Connect To Database")
 
