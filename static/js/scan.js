@@ -128,9 +128,6 @@ function handleImageUpload(file) {
                     'Content-Type': 'application/json'
                 }
             })
-            .then(function (response) {
-                return response.json();
-            })
             .then(function (data) {
                 var accuracyPercentage = Math.round(data.akurasi);
                 var accuracyValue = Math.floor(data.akurasi);
