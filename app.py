@@ -1,3 +1,39 @@
+import os
+# Specify path
+path_to_directory = "modelnlp"
+import subprocess
+import zipfile
+def runcmd(cmd, verbose = False, *args, **kwargs):
+
+    process = subprocess.Popen(
+        cmd,
+        stdout = subprocess.PIPE,
+        stderr = subprocess.PIPE,
+        text = True,
+        shell = True
+    )
+    std_out, std_err = process.communicate()
+    if verbose:
+        print(std_out.strip(), std_err)
+    pass
+
+
+# Check whether the specified
+# path exists or not
+isExist = os.path.exists(path_to_directory)
+if isExist == True:
+    print("Directory is exist.")
+else:
+    os.mkdir("modelnlp")
+
+if not os.listdir(path_to_directory):
+    runcmd('wget https://haisus.site/model.zip', verbose = True)
+    with zipfile.ZipFile('model.zip', 'r') as zip:
+        zip.extractall('modelnlp/')
+else:
+    print("Directory is not empty.")
+
+
 import json
 import pymongo
 from bson.objectid import ObjectId
@@ -67,11 +103,8 @@ app.secret_key = 'MySecret'
 
 #------------------------------------DATABASE------------------------------------#
 try:
-    mongo = pymongo.MongoClient(
-        host="localhost",
-        port=27017,
-        serverSelectionTimeoutMS=1000
-    )
+    CONNECTION_STRING = "mongodb+srv://herby:tuing123@cluster0.62pvn1z.mongodb.net/?retryWrites=true&w=majority"
+    mongo = pymongo.MongoClient(CONNECTION_STRING)
     db = mongo.herbalia
     mongo.server_info()
 except:
@@ -311,20 +344,6 @@ def cariArtikel():
 
 #------------------------------------CHATBOT------------------------------------#
 
-class apipredict(Resource):
-    def get(self):
-        question = request.args.get('pertanyaan')
-        print(question)
-        prediction = bert_prediction(str(question))
-        print(prediction)
-        return prediction
-
-#routes
-api.add_resource(apipredict, '/api/v1/model/predict', methods=['GET'])
-
-CORS(app)
-
-from bert import bert_prediction, random_question
 
 
 
